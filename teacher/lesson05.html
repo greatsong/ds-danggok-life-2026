@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5차시 (교사용) · 모델링 · 로그 공간에 직선을 긋다 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👩‍🏫</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">👩‍🏫</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="../lesson05.html">학생용 5차시 ↗</a>
+  <span class="badge teacher">교사용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">5차시 · 교사용</span>
+  <h1>모델링 · 로그 공간에 직선을 긋다 — <span class="a">교사 진행안</span></h1>
+  <div class="under"></div>
+  <p class="lead">학생용 <a href="../lesson05.html">5차시 페이지 ↗</a>를 화면에 띄운 채 진행합니다.
+  여기에는 <b>시간표 · 멘트 · 예상 질문 · 예상 오류 · 이론 심화</b>를 덧댔습니다.</p>
+
+  <div class="callout say">
+    <div class="h">🎙️ 도입 멘트 — 작은 AI가 태어나는 순간</div>
+    <p>“이제 로그로 편 점들 위에 <b>직선</b>을 긋습니다. 가장 잘 맞는 직선을 <b>사람이 손으로</b> 찾지 않아요. 컴퓨터가 데이터를 보고 스스로 찾죠. 이 과정이 <b>학습</b>이고, 코드로는 <code>model.fit()</code> 딱 한 줄. 이 한 줄에서 여러분의 <b>작은 AI가 태어납니다.</b>”</p>
+  </div>
+
+  <h2>⏱️ 50분 진행 시간표</h2>
+  <table class="timetable">
+    <tr><th>시간</th><th>블록</th><th>핵심</th></tr>
+    <tr><td>0~7′</td><td>복습·도입</td><td>3,188종·로그 변환 복기 · "이제 직선을 그어 수명을 물어보자"</td></tr>
+    <tr><td>7~25′</td><td>회귀 개념</td><td>로그 공간에 직선 맞추기 · 기울기 0.136 = "몸무게 10배에 수명 1.37배" · model.fit=학습</td></tr>
+    <tr><td>25~43′</td><td>①②③ 실습</td><td>예측기 만들기 · 슬라이더 예측 · 기울기 해석 개선</td></tr>
+    <tr><td>43~50′</td><td>정리 (이월 가능)</td><td>여러 몸무게 예측 · 코끼리 너머로 밀면? (외삽 복선)</td></tr>
+  </table>
+
+  <h2>블록별 진행 노트</h2>
+
+  <h3>회귀 개념 (7~25′)</h3>
+  <div class="callout theory">
+    <div class="h">📖 이론 심화 — 로그-로그 회귀와 거듭제곱 법칙 (지도서 4장 참고)</div>
+    <p>로그-로그 공간의 직선 <code>log L = β₀ + β₁·log W</code>는 원래 척도로 되돌리면 <code>L = 10^β₀ · W^β₁</code>, 즉 <b>거듭제곱 법칙(멱함수)</b>입니다. 그래서 기울기 β₁은 <b>탄력성</b> — “몸무게가 1% 늘 때 수명이 몇 % 느는가”이자, “몸무게가 10배면 수명은 <code>10^β₁</code>배”입니다. 실측 β₁ ≈ <b>0.136</b>이므로 <code>10^0.136 ≈ 1.37</code>배. 회귀 자체는 잔차 제곱합 <code>Σ(yᵢ − β₀ − β₁xᵢ)²</code>을 최소화하는 직선을 찾고, 기울기 <code>β̂₁ = S_xy/S_xx</code>는 x와 y의 공변동을 x의 변동으로 나눈 값입니다. 학생에겐 “기울기 = 몸무게 10배에 수명 몇 배”만 감각으로. 왜 로그냐면, 원척도에서 코끼리 한 마리가 좌표 전체를 지배해 나머지가 원점에 뭉치기 때문(3차시에서 본 장면). 지도서 4장이 멱함수와 로그 변환의 이유를 폅니다.</p>
+  </div>
+  <div class="callout ask">
+    <div class="h">🙋 예상 질문</div>
+    <p><b>“가장 잘 맞는 직선을 컴퓨터가 어떻게 찾아요?”</b> → “모든 점에서 직선까지의 <b>어긋난 정도(오차)를 제곱해 다 더한 값</b>이 가장 작아지는 직선을 계산으로 찾아요. 손으로 안 하고 공식이 있어요(그 공식이 <code>fit</code> 안에 들어 있죠).” · <b>“기울기가 0.136이면 관계가 약한 거 아니에요?”</b> → “완만한 건 맞아요. 몸무게가 10배 늘어도 수명은 1.37배죠. 근데 <b>0</b>은 아니에요 — 몸집이 클수록 오래 사는 경향은 분명히 있고, 그게 얼마나인지를 이 숫자가 알려 줘요.”</p>
+  </div>
+
+  <h3>①②③ 실습 (25~43′)</h3>
+  <div class="callout say">
+    <div class="h">🎙️ 멘트 — 결과가 똑같지 않아도 된다</div>
+    <p>“AI가 <b>이런 모습</b>의 코드를 줘요. 글자까지 같지 않아도 됩니다. 핵심은 <code>model.fit(X, y)</code> 한 줄 — 여기서 작은 AI가 태어나요. 슬라이더를 움직이면 예측값이 따라 바뀌죠. 1kg이면 약 17년, 70kg이면 약 31년. <b>여러 몸무게를 넣어 보세요.</b>”</p>
+  </div>
+  <div class="callout err">
+    <div class="h">🧯 예상 오류 (실측 기반)</div>
+    <p><b>ModuleNotFoundError: sklearn</b> → requirements.txt엔 설치명 <code>scikit-learn</code>(import는 <code>sklearn</code>). 이름 혼동 잦음. · <b>로그에서 오류/무한대</b> → <code>np.log10</code>은 0이나 음수에서 깨짐. 몸무게·수명은 모두 양수라 정상이나, 결측(NaN)을 안 빼면 에러. 4차시 <code>dropna</code>가 프롬프트에 들어 있는지 확인. · <b>X 모양 오류</b> → <code>a[["logW"]]</code> <b>대괄호 두 개</b>(표 모양, 2차원)여야 함. 한 개면 1차원이라 에러. AI가 준 코드면 대개 정상. · <b>예측이 이상하게 큼</b> → <code>10 ** log_pred</code>로 로그를 되돌리는 줄이 빠지면 수명이 로그값(약 1.2)으로 나옴. “로그를 원래 단위로 되돌린다”를 프롬프트에 명시. · <b>열 이름 오타</b> → 실제 열 <code>adult_weight_g</code>·<code>max_longevity_yrs</code>. 철자·단위(_g, _yrs) 확인.</p>
+  </div>
+
+  <h3>정리 (43~50′ · 이월 가능)</h3>
+  <div class="callout say">
+    <div class="h">🎙️ 마무리 + 외삽 복선</div>
+    <p>“슬라이더를 <b>코끼리보다 훨씬 무거운 값</b>까지 밀어 보세요. 직선이라 밀수록 예측 수명이 <b>끝없이</b> 올라가죠? 데이터에 거의 없는 몸무게까지 직선을 늘이는 걸 <b>외삽</b>이라 해요. 정말 그럴까? 이 물음이 다음 시간(평가와 한계)의 중심입니다.” 슬라이더 범위를 관측 밖까지 열어 둔 채로 마무리해 6차시로 자연스럽게 연결.</p>
+  </div>
+
+  <div class="callout tip">
+    <div class="h">🧾 생기부 관찰 지점</div>
+    <p><b>결과 해석</b> — 기울기 0.136을 “몸무게가 10배여도 수명은 1.37배”처럼 자기 말로 옮기고, 관계가 있으나 완만하다는 것을 구분해 설명한 학생을 채집.</p>
+  </div>
+
+  <h2>✅ 5차시 마무리 체크 (교사)</h2>
+  <ul class="checklist">
+    <li>전원 <code>model.fit()</code> = 학습을 체험했나?</li>
+    <li>기울기 0.136을 "몸무게 10배에 수명 1.37배"로 자기 말로 설명할 수 있나?</li>
+    <li>슬라이더로 여러 몸무게 예측값을 확인했나?</li>
+    <li>데이터 밖으로 밀면 끝없이 오르는 걸 보고 '외삽' 물음을 남겼나? (6차시 복선)</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="lesson04.html"><div class="dir">← 이전</div><div class="tt">4차시 · 전처리 (교사용)</div></a>
+    <a class="next" href="lesson06.html"><div class="dir">다음 →</div><div class="tt">6차시 · 평가와 한계 (교사용)</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 교사용 자료</footer>
+<script src="../assets/copy.js"></script>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>15차시 · 확장 데모 + 팀 구성 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">버퍼 · 15차시</span>
+  <h1>이름표 없이 묶어도 <span class="a">주기율표가 드러난다</span> · 팀 짜기</h1>
+  <div class="under"></div>
+
+  <p class="lead">지금까지 다룬 건 모두 동물의 데이터였다. 오늘은 전혀 다른 데이터, 원소 주기율표를 연다. 금속·비금속이라는 이름표를 하나도 주지 않고 성질 숫자만으로 묶어도, 주기율표의 결이 저절로 드러난다. 군집이 동물에만 통하는 재주가 아님을 확인하고, 이어서 팀을 짜고 우리 프로젝트 주제를 정한다.</p>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 하는 것</div>
+    <ul>
+      <li><b>원소 군집 데모</b> — 118개 원소를 이름표 없이 성질만으로 묶어 보기 (선생님 시연)</li>
+      <li><b>팀 주제 카드</b> — 2~3인 팀을 짜고 회귀·분류·군집 중 하나를 골라 주제를 적기</li>
+    </ul>
+  </div>
+
+  <h2>1. 이름표 없이 묶어도 (선생님 시연)</h2>
+  <ul>
+    <li>군집은 <b>정답표 없이</b> 비슷한 것끼리 묶는 방법이었다. 동물이 아닌 데이터에서도 통할까?</li>
+  </ul>
+  <p>PubChem이라는 화학 데이터 창고에서 원소 <b>118개</b>의 성질(전기음성도·이온화 에너지·원자 반지름·녹는점)을 가져온다. 여기엔 "이 원소는 금속" 같은 <b>이름표를 넣지 않는다</b>. 성질 숫자만 컴퓨터에 주고 두 묶음으로 나눠 본다.</p>
+
+  <div class="callout tip">
+    <div class="h">💡 왜 선생님 시연인가</div>
+    <ul>
+      <li>이번 차시는 "군집이 어디서든 통한다"는 감을 잡는 게 목표. 코드는 선생님 화면으로 함께 본다.</li>
+      <li>아래 ①②는 눈으로 따라오면 충분하다. 배포는 하지 않는다.</li>
+    </ul>
+  </div>
+
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>원소 주기율표 데이터를 불러와서, 금속·비금속 같은 분류 이름표는
+빼고 성질 숫자만으로 원소들을 두 묶음으로 나눠 줘.
+
+- 데이터 주소: https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/CSV
+- 성질은 전기음성도, 이온화 에너지, 원자 반지름, 녹는점을 쓰고
+  값이 빠진 원소는 빼 줘.
+- 두 묶음에 각각 어떤 원소들이 들어갔는지 기호로 보여 줘.</pre></div>
+
+  <div class="codewrap code"><span class="label">② AI가 준 코드 예시</span><pre>import pandas as pd
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+
+URL = "https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/CSV"
+df = pd.read_csv(URL)
+
+# 성질 숫자만 쓴다 — "금속/비금속" 이름표(GroupBlock)는 넣지 않는다
+feats = ["Electronegativity", "IonizationEnergy", "AtomicRadius", "MeltingPoint"]
+for c in feats:
+    df[c] = pd.to_numeric(df[c], errors="coerce")
+a = df.dropna(subset=feats)          # 값이 빠진 원소는 뺀다
+
+Xs = StandardScaler().fit_transform(a[feats])
+a = a.assign(묶음=KMeans(n_clusters=2, random_state=42, n_init=10).fit_predict(Xs))
+
+for cl in sorted(a["묶음"].unique()):
+    sub = a[a["묶음"] == cl]
+    print(f"묶음 {cl} · {len(sub)}개 · 평균 전기음성도 {sub['Electronegativity'].mean():.2f}")
+    print("   ", list(sub["Symbol"]))</pre></div>
+
+  <div class="callout check">
+    <div class="h">✔️ 시연에서 확인할 것</div>
+    <ul>
+      <li>값이 온전한 <b>91개</b> 원소가 <b>[66개, 25개]</b> 두 묶음으로 나뉜다.</li>
+      <li>작은 묶음(25개)엔 <b>H·C·N·O·F·S·Cl</b> 같은 <b>비금속·할로겐·준금속</b>이 대부분 모인다. 전기음성도가 높은 쪽이다.</li>
+      <li>아무도 "금속/비금속"이라고 알려 주지 않았는데, 성질 숫자만으로 <b>주기율표 오른쪽 위(비금속)</b>가 한 묶음으로 드러났다.</li>
+    </ul>
+  </div>
+  <div class="callout warn">
+    <div class="h">⚠️ 딱 떨어지진 않는다</div>
+    <p>비금속 묶음에 구리·금 같은 금속 몇 개가 섞이기도 한다. 군집은 완벽한 분류표가 아니라 <b>비슷한 것끼리</b>의 근사한 묶음이다. 그래도 "성질만 보고도 주기율표의 큰 결이 나온다"는 사실은 또렷하다.</p>
+  </div>
+
+  <div class="callout tip">
+    <div class="h">💼 데이터로 일하는 사람들 (3분)</div>
+    <ul>
+      <li>데이터 분석가·생명 연구자·기획자·마케터 — 오늘 배운 판단(질문·감식·해석·한계)이 그대로 일이 되는 직업들</li>
+      <li>관심 진로 분야에도 데이터가 있어요 · 팀 주제를 고를 때 <b>내 진로와 잇는 것</b>도 좋은 선택</li>
+    </ul>
+  </div>
+
+  <h2>2. 팀 짜고 주제 정하기</h2>
+  <p>공통 15차시가 끝나면 팀 프로젝트가 시작된다. 오늘 팀을 짜고 주제의 뼈대를 잡는다. 앞서 배운 세 트랙 중 우리 팀 질문에 맞는 틀을 하나 고른다.</p>
+
+  <ol class="steps">
+    <li><span class="st">팀 짜기</span><br>2~3인으로 팀을 만든다. 서로 관심 주제가 통하는 사람과 묶이면 좋다.</li>
+    <li><span class="st">틀 고르기</span><br>우리 질문이 숫자를 맞히는 문제면 <b>회귀</b>, 단계·종류를 맞히는 문제면 <b>분류</b>, 정답 없이 비슷한 것끼리 묶는 문제면 <b>군집</b>이다.</li>
+    <li><span class="st">데이터 후보 적기</span><br>답을 데이터로 확인할 수 있는 질문인지 따져 본다. 쓸 만한 데이터 후보를 <b>3개</b> 적는다.</li>
+    <li><span class="st">주제 카드 제출</span><br>아래 항목을 채워 클래스룸에 제출한다.</li>
+  </ol>
+
+  <div class="callout tip">
+    <div class="h">💡 우리 팀 주제 카드 (이 항목을 채워요)</div>
+    <ul>
+      <li><b>팀 이름 · 팀원</b> (2~3인)</li>
+      <li><b>우리 질문 한 문장</b> — 데이터로 답할 수 있고 범위가 명확하게</li>
+      <li><b>고른 틀</b> — 회귀 / 분류 / 군집 중 하나 + 고른 이유</li>
+      <li><b>데이터 후보 3개</b> — 어디서 구할지도 함께</li>
+      <li><b>예상되는 구멍</b> — 이 데이터에 있을 법한 이상치·결측·편향 하나</li>
+    </ul>
+  </div>
+
+  <div class="callout warn">
+    <div class="h">⚠️ 답할 수 없는 질문은 피하기</div>
+    <p>"어떤 동물이 가장 귀여운가" 같은 질문은 취향이라 데이터로 답하기 어렵다. "몸집이 큰 동물은 더 오래 사는가"처럼 <b>측정할 수 있고 범위가 분명한</b> 질문으로 바꾼다.</p>
+  </div>
+
+  <h2>🎒 오늘의 체크</h2>
+  <ul class="checklist">
+    <li>이름표 없이 성질만으로도 원소가 금속·비금속으로 갈린다는 걸 봤다.</li>
+    <li>군집이 동물뿐 아니라 다른 데이터에서도 통한다는 걸 안다.</li>
+    <li>팀(2~3인)을 짰다.</li>
+    <li>회귀·분류·군집 중 우리 틀을 골랐고 이유를 말할 수 있다.</li>
+    <li>데이터 후보 3개를 적어 주제 카드를 제출했다.</li>
+  </ul>
+
+  <h2>📚 오늘의 용어</h2>
+  <table class="glossary-table">
+    <tr><th>용어</th><th>뜻</th></tr>
+    <tr><td class="term">주기율표</td><td>원소를 성질에 따라 정리한 표. 금속·비금속 등으로 나뉜다</td></tr>
+    <tr><td class="term">전기음성도</td><td>원자가 전자를 끌어당기는 힘. 비금속일수록 대체로 높다</td></tr>
+    <tr><td class="term">이름표 없이 묶기</td><td>정답 분류(금속/비금속)를 주지 않고 성질 숫자만으로 군집하는 것</td></tr>
+    <tr><td class="term">회귀 · 분류 · 군집</td><td>숫자 맞히기 · 단계 맞히기 · 정답 없이 묶기. 팀 틀 세 가지</td></tr>
+  </table>
+  <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+
+  <div class="pager">
+    <a class="prev" href="lesson14.html"><div class="dir">← 이전</div><div class="tt">14차시 · 이름 붙이기 + 배포</div></a>
+    <a class="next" href="lesson16.html"><div class="dir">다음 →</div><div class="tt">16차시 · 연관 분석 (선택)</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

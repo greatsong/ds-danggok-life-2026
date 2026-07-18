@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11차시 (교사용) · 배포 + 백테스트 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👩‍🏫</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">👩‍🏫</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="../lesson11.html">학생용 11차시 ↗</a>
+  <span class="badge teacher">교사용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">11차시 · 교사용</span>
+  <h1>배포 + 백테스트 — <span class="a">교사 진행안</span></h1>
+  <div class="under"></div>
+  <p class="lead">학생용 <a href="../lesson11.html">11차시 페이지 ↗</a>를 화면에 띄운 채 진행합니다.
+  여기에는 <b>시간표 · 멘트 · 예상 질문 · 예상 오류 · 이론 심화</b>를 덧댔습니다.</p>
+
+  <div class="callout say">
+    <div class="h">🎙️ 도입 멘트 — 정직한 시험</div>
+    <p>"9차시 정확도, 사실 <b>배운 답을 외운 점수</b>가 섞여 있었을 수 있어요. 오늘은 <b>안 본 종</b>으로 다시 재 봅니다. 종의 4분의 1을 떼어 두고 나머지로만 배우게 한 뒤, 떼어 둔 종으로 시험해요. 그리고 두 번째 앱을 인터넷에 올립니다."</p>
+  </div>
+
+  <h2>⏱️ 50분 진행 시간표</h2>
+  <table class="timetable">
+    <tr><th>시간</th><th>블록</th><th>핵심</th></tr>
+    <tr><td>0~7′</td><td>도입</td><td>"학습에 안 쓴 종으로 시험해야 진짜 실력" · 외운 점수 vs 진짜 점수</td></tr>
+    <tr><td>7~22′</td><td>백테스트</td><td>종의 4분의 1 떼기 → 나머지로 학습 → 학습 종(거의 100%)과 안 본 종(약 87%) 비교</td></tr>
+    <tr><td>22~43′</td><td>①②③ 실습 (배포)</td><td>온혈·냉혈 판별 앱 배포 · "얼마나 믿을지" 문구 · 갤러리 게시</td></tr>
+    <tr><td>43~50′</td><td>정리 (이월 가능)</td><td>짝의 앱 상호 검증 · 한 줄 피드백</td></tr>
+  </table>
+  <div class="callout say">
+    <div class="h">🎙️ 배포는 실패가 잦습니다</div>
+    <p>두 번째 배포라 7차시보다 빠릅니다. 그래도 막히는 학생이 나오면 <b>짝과 한 화면</b>으로 붙이고, <b>교사 예비 배포본</b>을 하나 띄워 두세요. 배포에 시간이 몰리면 상호 검증(43~50′)을 다음 차시 앞으로 이월합니다. 오늘 반드시 남길 산출물은 <b>배포 URL 하나</b>입니다.</p>
+  </div>
+
+  <h2>블록별 진행 노트</h2>
+
+  <h3>백테스트 (7~22′)</h3>
+  <div class="callout theory">
+    <div class="h">📖 이론 심화 — 외운 점수와 진짜 점수 (지도서 6장 참고)</div>
+    <p>랜덤 포레스트는 학습에 쓴 종을 거의 다 외웁니다. 그래서 학습 종으로 재면 정확도가 <b>거의 100%</b>로 뜨는데, 이건 진짜 실력이 아니라 <b>과적합</b>(외운 것)입니다. 학습에서 뺀 <b>안 본 종</b>으로 재면 약 87%로 내려오고, 이 쪽이 진짜에 가깝습니다. 9차시의 교차검증(약 83.5%)도 매 조각을 안 본 데이터로 시험한 정직한 추정이었습니다. 학습 종 점수와 안 본 종 점수가 다르다는 걸 눈으로 확인시키는 것이 이 블록의 목표입니다.</p>
+  </div>
+  <div class="callout err">
+    <div class="h">🧯 예상 오류 (빈출)</div>
+    <p><b>train으로만 정확도를 재고 좋아함</b> → 학생이 <code>model.predict(X_train)</code> 점수(거의 100%)를 보고 "완벽하다"고 오해할 수 있음. 반드시 <b>안 본 종(X_test)</b> 점수를 나란히 보여 대비시키세요. · <b>결측·정답 만들기 누락</b> → 9차시와 같은 손질(체중·수명 결측 제거 → 온혈/냉혈 정답 → 중앙값 채움)을 그대로 이어야 합니다. 프롬프트에 이 순서가 다 들어 있는지 확인. · <b>두 정확도가 다르다고 당황</b> → 그게 오늘의 핵심. 남에게 보여 줄 점수는 <b>안 본 종으로 잰 것</b>이어야 정직합니다. · <b>안 본 종 점수가 조금 다름</b> → 제작 시점 실측 약 87%, 버전·분할에 따라 소폭 흔들림(정상).</p>
+  </div>
+
+  <h3>①②③ 실습 · 배포 (22~43′)</h3>
+  <div class="callout say">
+    <div class="h">🎙️ 멘트 — 점수에 '믿음 딱지'를 붙이자</div>
+    <p>"배포한 앱에 정확도만 크게 박으면 안 돼요. <b>'이 예측은 안 본 종 기준 정확도 약 87%짜리예요'</b>라고 함께 적어 주세요. 특히 <b>'냉혈'은 자주 놓치니 참고하라</b>는 안내까지 넣으면, 쓰는 사람이 어디까지 믿을지 스스로 판단할 수 있어요."</p>
+  </div>
+  <div class="callout ask">
+    <div class="h">🙋 예상 질문</div>
+    <p><b>"배포 화면이 교재랑 달라요."</b> → "스트림릿·깃허브 화면은 조금씩 바뀌어요. 버튼을 못 찾으면 <b>AI에게 물어보세요</b> — '스트림릿 클라우드에 배포하는 지금 방법 알려줘'." · <b>"정확도가 87%로 떨어졌는데 나빠진 거예요?"</b> → "아니에요, <b>정직해진</b> 거예요. 학습 종에서 잰 점수가 부풀었던 거고, 안 본 종으로 잰 87%가 진짜에 가까워요."</p>
+  </div>
+  <div class="callout tip">
+    <div class="h">💡 배포 참고</div>
+    <p>배포는 <a href="https://share.streamlit.io" target="_blank" rel="noopener"><code>share.streamlit.io</code></a>에서 진행합니다. <code>main.py</code>와 <code>requirements.txt</code> 두 파일이 깃허브 저장소에 올라가 있는지 먼저 확인하세요.</p>
+  </div>
+
+  <div class="callout tip">
+    <div class="h">🧾 생기부 관찰 지점</div>
+    <p><b>한계 인식</b> — 배포 앱에 정확도만이 아니라 "안 본 종 기준 약 87%"와 "냉혈은 자주 놓침" 같은 <b>믿음의 한계를 스스로 표기한</b> 학생의 문구를 갤러리 산출물에서 채집.</p>
+  </div>
+
+  <h2>✅ 11차시 마무리 체크 (교사)</h2>
+  <ul class="checklist">
+    <li>전원 온혈·냉혈 판별 앱 1개 배포 · 갤러리 게시? (실패자 → 예비본·짝 페어링)</li>
+    <li>백테스트가 왜 안 본 종으로 재는지 설명 가능한가</li>
+    <li>학습 종 점수 ≠ 안 본 종 점수를 눈으로 확인했는가</li>
+    <li>앱에 "얼마나 믿을지" 문구를 넣었는가</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="lesson10.html"><div class="dir">← 이전</div><div class="tt">10차시 · 정확도만 보면 놓치는 것 (교사용)</div></a>
+    <a class="next" href="lesson12.html"><div class="dir">다음 →</div><div class="tt">12차시 · 정답표 없이 비슷한 것끼리 (교사용)</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 교사용 자료</footer>
+<script src="../assets/copy.js"></script>
+</body>
+</html>

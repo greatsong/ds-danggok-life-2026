@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>10차시 · 정확도만 보면 놓치는 것 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">10차시 · 분류 트랙 ② (★핵심)</span>
+  <h1>정확도만 보면 <span class="a">놓치는 것</span></h1>
+  <div class="under"></div>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 확인하는 것</div>
+    <ul>
+      <li><b>혼동행렬 해석표</b> — 83.5%라는 숫자를 세 각도에서 따져 본다</li>
+    </ul>
+  </div>
+
+  <h2>1. 확인 하나 — 아무것도 안 배워도 75%</h2>
+  <ul>
+    <li>온혈·냉혈 종 수: 온혈 2,398 · 냉혈 790 (합 3,188)</li>
+    <li>온혈이 전체의 <b>2,398 ÷ 3,188 = 75.2%</b></li>
+    <li>그러면 <b>무조건 '온혈'로만 찍는</b> 단순한 모델도 정확도 75.2%입니다</li>
+  </ul>
+  <div class="callout warn">
+    <div class="h">⚠️ 83.5%를 다시 보자</div>
+    <ul>
+      <li>기준선(전부 온혈)이 이미 75.2% · 내 모델 83.5%는 그 위 <b>8.3%p</b>일 뿐</li>
+      <li>정확도는 <b>가장 흔한 답만 찍어도 높게 나옵니다</b> — 한쪽이 많은 데이터에선 겉보기와 다릅니다</li>
+    </ul>
+  </div>
+
+  <h2>2. 확인 둘 — 정작 '냉혈'을 자주 놓친다 (①②③)</h2>
+  <ul>
+    <li>정확도 하나로는 <b>어느 갈래를 못 맞히는지</b> 안 보입니다 → <b>혼동행렬</b>과 <b>재현율</b>로 들여다봅니다</li>
+    <li>재현율 = 실제 '냉혈'인 종 중에서 모델이 '냉혈'이라 맞힌 비율</li>
+  </ul>
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>지난 시간에 만든 온혈·냉혈 분류기를 이어서 분석해줘. 조건:
+
+- 온혈과 냉혈을 서로 얼마나 헷갈리는지 혼동행렬을 표로 그려줘.
+- 갈래마다 재현율을 계산해서, 특히 '냉혈'을 얼마나 잘 잡아내는지
+  알려줘.
+- 아무것도 안 배우고 무조건 '온혈'로만 찍었을 때의 정확도(기준선)도
+  함께 계산해서 내 모델 정확도와 나란히 보여줘.</pre></div>
+  <ul>
+    <li>AI가 아래 <b>모습</b>의 코드를 줌 (똑같지 않아도 OK)</li>
+  </ul>
+  <div class="codewrap code"><span class="label">② AI가 준 코드 (예시)</span><pre>import streamlit as st
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
+
+url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv"
+df = pd.read_csv(url).dropna(subset=["adult_weight_g", "max_longevity_yrs"])
+df["is_warm"] = df["class"].isin(["Mammalia", "Aves"]).astype(int)
+
+feats = ["adult_weight_g", "max_longevity_yrs",
+         "female_maturity_days", "gestation_days", "litter_size"]
+X = df[feats].fillna(df[feats].median())
+y = df["is_warm"]
+
+pred = cross_val_predict(RandomForestClassifier(random_state=42), X, y, cv=5)
+
+# 혼동행렬 — 냉혈(0)·온혈(1)을 서로 얼마나 헷갈리나
+names = ["냉혈", "온혈"]
+cm = confusion_matrix(y, pred)
+st.subheader("혼동행렬 (세로=실제, 가로=예측)")
+st.dataframe(pd.DataFrame(cm, index=names, columns=names))
+
+# 갈래별 성적표(정밀도·재현율)
+st.subheader("갈래별 성적표")
+st.text(classification_report(y, pred, target_names=names, zero_division=0))
+
+# 기준선: 무조건 '온혈'로만 찍기
+baseline = max(y.mean(), 1 - y.mean())
+st.metric("내 모델 정확도", f"{accuracy_score(y, pred):.1%}")
+st.metric("전부 '온혈'로 찍기", f"{baseline:.1%}")</pre></div>
+  <div class="callout warn">
+    <div class="h">⚠️ '냉혈' 재현율 = 0.66</div>
+    <ul>
+      <li>냉혈은 실제 세 종 중 한 종을 온혈로 잘못 봅니다(재현율 0.66)</li>
+      <li>온혈은 잘 맞히니 전체 정확도는 높습니다 · 그런데 <b>한쪽 갈래를 자주 놓치면</b> 그 정확도만으로는 부족합니다</li>
+    </ul>
+  </div>
+  <div class="codewrap improve"><span class="label">③ 프롬프트 개선 (예시)</span><pre>좋아! 이어서 고쳐줘.
+- '냉혈' 재현율을 크게 강조해서 보여줘.
+- 냉혈인데 온혈로 잘못 맞힌 종을 몇 개만 예시로 뽑아 줘.</pre></div>
+
+  <h2>3. 확인 셋 — 정답을 미리 본 건 아닌지 (레이블 누수)</h2>
+  <p>데이터에는 <b>체온(body_temp_k)</b> 열이 있습니다. 이걸 특징에 넣으면 정확도가 <b>0.99</b> 가까이 오릅니다(체온이 실제로 측정된 종만 남겨 재면 약 0.988). 하지만 이건 실력이 아니라 <b>정답을 특징에 넣은 셈</b>입니다.</p>
+  <div class="callout warn">
+    <div class="h">⚠️ 왜 반칙인가 — 레이블 누수</div>
+    <ul>
+      <li>온혈·냉혈이란 곧 <b>체온을 일정하게 유지하느냐</b>의 문제입니다 · 체온을 알려 주는 건 정답을 미리 보여 주는 셈</li>
+      <li>게다가 체온은 대부분의 종에서 <b>측정돼 있지 않습니다</b>(3,188종 중 422종만) · 실제로 쓸 수도 없는 특징입니다</li>
+      <li>이렇게 정답에서 나온 정보로 올린 점수를 <b>레이블 누수</b>라 합니다</li>
+    </ul>
+  </div>
+
+  <h2>🔎 오늘의 발견 — 정확도만 보면 놓치는 세 가지</h2>
+  <div class="callout check">
+    <div class="h">✔️ 83.5%만 보면 놓치는 것</div>
+    <ul>
+      <li><b>하나</b> — '온혈'만 찍어도 75.2%. 기준선을 안 보면 83.5%가 대단해 보인다</li>
+      <li><b>둘</b> — '냉혈'은 세 종 중 한 종을 놓친다(재현율 0.66)</li>
+      <li><b>셋</b> — 체온 열을 넣으면 0.99까지 오르지만 그건 정답을 미리 본 셈(레이블 누수)</li>
+      <li>→ <b>정확도 한 숫자로 모델을 판단하지 않는다.</b> 무엇을 어떻게 틀리는지까지 본다</li>
+    </ul>
+  </div>
+
+  <h2>📚 오늘의 용어</h2>
+  <details class="glossary">
+    <summary>오늘 나온 낱말 — 외울 필요 없어요 · 잊으면 여기로</summary>
+    <div class="gin">
+    <table class="glossary-table">
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td class="term">기준선(baseline)</td><td>가장 흔한 답만 찍었을 때의 정확도 — 비교의 출발선</td></tr>
+      <tr><td class="term">혼동행렬</td><td>실제 갈래와 예측 갈래를 맞대어 무엇을 헷갈리는지 보는 표</td></tr>
+      <tr><td class="term">재현율</td><td>실제 그 갈래인 것 중 모델이 맞게 잡아낸 비율</td></tr>
+      <tr><td class="term">정밀도</td><td>그 갈래라고 예측한 것 중 실제로 맞은 비율</td></tr>
+      <tr><td class="term">불균형 데이터</td><td>한 갈래가 유난히 많은 데이터 — 정확도가 부풀려짐</td></tr>
+      <tr><td class="term">레이블 누수</td><td>정답에서 나온 정보를 특징에 넣어 점수를 부풀리는 반칙</td></tr>
+    </table>
+    <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+    </div>
+  </details>
+
+  <h2>🎒 오늘의 체크</h2>
+  <ul class="checklist">
+    <li>기준선(전부 온혈)이 75.2%임을 계산으로 확인했다</li>
+    <li>혼동행렬과 재현율로 '냉혈'을 세 종 중 한 종 놓친다는 걸 읽었다</li>
+    <li>체온 열이 왜 레이블 누수인지 설명할 수 있다</li>
+    <li>정확도 한 숫자만 믿으면 안 되는 이유를 안다</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="lesson09.html"><div class="dir">← 이전</div><div class="tt">9차시 · 첫 분류 모델</div></a>
+    <a class="next" href="lesson11.html"><div class="dir">다음 →</div><div class="tt">11차시 · 배포 + 백테스트</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3차시 · 시각화 · 점이 뭉쳐 안 보일 때 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">3차시</span>
+  <h1>시각화 · <span class="a">점이 뭉쳐 안 보일 때</span></h1>
+  <div class="under"></div>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 만드는 것</div>
+    <ul>
+      <li><b>몸무게-수명 산점도</b> — 4,513종을 점으로 흩뿌린 그래프</li>
+      <li><b>관찰 메모</b> — 점들이 어디에 몰려 있는지, 관계가 보이는지 한 줄</li>
+    </ul>
+  </div>
+
+  <h2>0. 지난 차시</h2>
+  <ul>
+    <li>표의 첫 인상 · 4,513종, 여섯 강 · 몸무게는 0.5g부터 1억 g까지</li>
+    <li>오늘 → 앵커 질문을 <b>그림</b>으로 물어본다 · "무거운 동물이 정말 더 오래 살까"</li>
+  </ul>
+
+  <h2>1. 두 숫자를 점으로 흩뿌리기</h2>
+  <p>질문이 "몸무게가 무거울수록 오래 사는가"라면, 한 종을 <b>점 하나</b>로 찍어 봅니다. 가로축은 몸무게, 세로축은 최대수명이에요. 무거운 동물이 정말 오래 산다면, 점들이 <b>왼쪽 아래에서 오른쪽 위로</b> 늘어서야 합니다.</p>
+
+  <h2>2. 몸무게-수명 산점도 (①②③)</h2>
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>동물 데이터에서 가로축은 몸무게, 세로축은 최대수명으로 산점도를 그려 줘.
+한 종이 점 하나가 되게 하고, 마우스를 올리면 동물 이름이 뜨게 해 줘.
+데이터는 여기야: https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv</pre></div>
+  <ul>
+    <li>여러분 화면이 이런 모습이면 성공 · 글자까지 같을 필요 없음</li>
+  </ul>
+  <div class="codewrap code"><span class="label">② AI가 준 코드 예시</span><pre>import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+st.title("🔵 몸무게 vs 최대수명 (원래 눈금)")
+
+url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv"
+df = pd.read_csv(url)
+
+# 몸무게(가로) · 최대수명(세로) 산점도
+fig = px.scatter(
+    df, x="adult_weight_g", y="max_longevity_yrs",
+    hover_name="common_name",
+    labels={"adult_weight_g": "몸무게(g)", "max_longevity_yrs": "최대수명(년)"},
+)
+st.plotly_chart(fig, use_container_width=True)
+
+# 두 숫자가 함께 오르내리는 정도(상관계수)
+r = df["adult_weight_g"].corr(df["max_longevity_yrs"])
+st.write(f"상관계수 r = {r:.2f}")</pre></div>
+  <ul>
+    <li>그래프가 뜨면 → 세 박자대로 <b>③ 개선</b>으로 몰린 점을 떼어 놓기</li>
+  </ul>
+  <div class="codewrap improve"><span class="label">③ 프롬프트 개선 예시</span><pre>점들이 왼쪽 아래 구석에 다 뭉쳐서 안 보여.
+어떤 종이 겹쳐 있는지 강(class)마다 색을 다르게 칠해 줘.</pre></div>
+
+  <h2>3. 그래프 읽기 — 관찰</h2>
+  <div class="callout warn">
+    <div class="h">🔎 오늘의 발견 — 점이 좌하단에 뭉쳐 관계가 안 보인다</div>
+    <ul>
+      <li>점의 <b>약 60%</b>가 몸무게 1kg 미만 · 그래서 대부분 <b>왼쪽 아래 한구석</b>에 뭉친다</li>
+      <li>대왕고래(1억 g) 한 마리가 가로축을 혼자 다 차지해, 나머지 4,000여 종이 세로선처럼 겹친다</li>
+      <li>상관계수 <b>r = 0.29</b> · 직선으로 설명되는 정도는 <b>R² = 0.08</b>뿐 · 즉 이 그림으로는 관계를 말하기 어렵다</li>
+      <li>"무거우면 오래 산다"가 맞는지 <b>이 눈금으로는 확인이 안 된다</b> → 다음 차시에서 눈금을 바꾼다</li>
+    </ul>
+  </div>
+  <div class="callout check">
+    <div class="h">✔️ 모둠 토의 · 관찰 메모</div>
+    <ul>
+      <li>점들이 <b>어디에 몰려 있는지</b> 한 줄로 적는다</li>
+      <li>"관계가 보이는가 / 안 보이는가"를 적고, <b>왜 안 보일지</b> 추측 한 줄</li>
+      <li>이 메모가 다음 차시 <b>전처리·로그 변환</b>의 출발점</li>
+    </ul>
+  </div>
+
+  <div class="callout tip">
+    <div class="h">💡 상관계수 r 을 읽는 눈</div>
+    <ul>
+      <li>r은 두 숫자가 <b>함께 오르내리는 정도</b> · −1에서 1 사이 · 0에 가까우면 관계가 약함</li>
+      <li>r = 0.29는 약한 관계 · 그런데 이게 <b>진짜 약한 건지, 눈금 때문에 그렇게 보이는 건지</b>는 아직 모른다</li>
+    </ul>
+  </div>
+
+  <h2>📚 오늘의 용어</h2>
+  <details class="glossary">
+    <summary>오늘 나온 낱말 5개 — 외울 필요 없습니다 · 잊으면 여기로</summary>
+    <div class="gin">
+    <table class="glossary-table">
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td class="term">산점도</td><td>두 숫자를 가로·세로축에 놓고 점으로 흩뿌린 그래프</td></tr>
+      <tr><td class="term">상관계수(r)</td><td>두 숫자가 함께 오르내리는 정도 — −1에서 1 사이</td></tr>
+      <tr><td class="term">R²(맛보기)</td><td>직선이 점을 얼마나 설명하는지의 0~1 점수 — 정식 정의는 6차시에</td></tr>
+      <tr><td class="term">원래 눈금(원척도)</td><td>값을 있는 그대로 쓴 축 — 큰 값 하나가 축을 독차지할 수 있음</td></tr>
+      <tr><td class="term">plotly(플롯리)</td><td>마우스를 올리면 값이 뜨는 그래프를 그리는 도구</td></tr>
+    </table>
+    <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+    </div>
+  </details>
+
+  <h2>🎒 오늘의 체크</h2>
+  <ul class="checklist">
+    <li>두 숫자의 관계를 산점도로 그릴 수 있다</li>
+    <li>점이 좌하단에 뭉쳐 관계가 잘 안 보이는 상황을 설명할 수 있다</li>
+    <li>상관계수 r = 0.29, R² = 0.08이 "약하게 보인다"는 뜻임을 안다</li>
+    <li>왜 관계가 안 보이는지 추측을 관찰 메모로 남겼다</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="lesson02.html"><div class="dir">← 이전</div><div class="tt">2차시 · 데이터 만나기 · 표를 보는 눈</div></a>
+    <a class="next" href="lesson04.html"><div class="dir">다음 →</div><div class="tt">4차시 · 전처리 · 왜 로그를 씌우는가</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

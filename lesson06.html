@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>6차시 · 평가와 한계 — 언제 믿을 수 있나 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">6차시</span>
+  <h1>평가와 한계 — <span class="a">언제 믿을 수 있나</span></h1>
+  <div class="under"></div>
+  <div class="quote">
+    <div class="q">"좋은 분석은 '얼마나 맞나'보다 '언제 믿을 수 있나'를 먼저 묻는다."</div>
+    <span class="by">이 수업의 관통 원칙 — 한계가 곧 내용</span>
+  </div>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 하는 것</div>
+    <ul>
+      <li><b>한계 진단표</b> — 지난 차시 수명 예측기를 세 각도에서 조건을 바꿔 확인하고, 어디까지 믿을지 적는다</li>
+    </ul>
+  </div>
+
+  <h2>0. 질문 하나</h2>
+  <ul>
+    <li>지난 차시에 만든 예측기는 "이 몸무게면 몇 년"이라고 <b>숫자를 내놓습니다</b>.</li>
+    <li>그런데 이 숫자를 <b>얼마나 믿어야 할까요?</b> 오늘은 이 하나만 다룹니다.</li>
+    <li>믿음의 근거를 세 가지 조건으로 확인합니다. 조건마다 결과가 어떻게 달라지는지 봅니다.</li>
+  </ul>
+
+  <h2>1. 첫 번째 조건 — 척도 (R² 0.08 ↔ 0.32)</h2>
+  <ul>
+    <li><b>R²</b>(결정계수) = 직선이 데이터를 얼마나 잘 설명하는지 나타내는 0~1 점수. 1에 가까울수록 잘 맞습니다.</li>
+    <li>몸무게와 수명을 <b>원래 눈금 그대로</b> 놓고 직선을 그으면 R²가 겨우 <b>0.08</b>입니다. 거의 설명하지 못합니다.</li>
+    <li>4차시에서 한 것처럼 둘을 <b>로그로 바꾼 뒤</b> 직선을 그으면 R²가 <b>0.32</b>로 올라갑니다.</li>
+  </ul>
+  <table class="daymap">
+    <thead><tr><th>척도(눈금)</th><th>R²</th></tr></thead>
+    <tbody>
+      <tr><td>원척도 (몸무게 g, 수명 년 그대로)</td><td><b>0.08</b></td></tr>
+      <tr><td>로그 척도 (log10 몸무게 → log10 수명)</td><td><b>0.32</b></td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip">
+    <div class="h">💡 같은 데이터, 다른 척도, 4배의 설명력</div>
+    <ul>
+      <li>데이터는 그대로입니다. 바뀐 것은 <b>어떤 눈금으로 보느냐</b>뿐입니다.</li>
+      <li>몸집이 8자릿수까지 벌어진 생물 데이터는 <b>로그로 봐야</b> 관계가 드러납니다.</li>
+      <li>"관계가 없다"가 아니라 "<b>맞는 눈금으로 안 봤다</b>"였습니다. 척도를 밝히지 않은 R²는 반쪽 답입니다.</li>
+    </ul>
+  </div>
+
+  <h2>2. 두 번째 조건 — 집단 (포유류만 보면 R² 0.50)</h2>
+  <ul>
+    <li>로그로 봐도 전체 R²는 <b>0.32</b>입니다. 아직 흩어짐이 큽니다. 왜일까요?</li>
+    <li>새·물고기·양서류·파충류·포유류가 <b>한 그래프에 섞여</b> 있기 때문입니다. 집단마다 몸-수명 관계가 다릅니다.</li>
+    <li><b>포유류만</b> 따로 떼어 같은 직선을 그으면 R²가 <b>0.50</b>까지 올라갑니다.</li>
+  </ul>
+  <table class="daymap">
+    <thead><tr><th>본 집단</th><th>로그-로그 R²</th></tr></thead>
+    <tbody>
+      <tr><td>전체 3,188종 (6개 강 섞임)</td><td><b>0.32</b></td></tr>
+      <tr><td>포유류(Mammalia)만</td><td><b>0.50</b></td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip">
+    <div class="h">💡 "어느 집단이냐"에 답이 달렸다</div>
+    <ul>
+      <li>집단을 좁히면 관계가 더 또렷해집니다. 대신 <b>포유류에서만</b> 하는 말이 됩니다.</li>
+      <li>"동물은 몸집이 클수록 오래 산다"의 정직한 답은 <b>어느 집단에서 얼마나 그런지</b>를 함께 밝히는 것입니다.</li>
+      <li>집단을 밝히지 않은 R²도 반쪽 답입니다(첫 번째 조건의 척도와 짝).</li>
+    </ul>
+  </div>
+
+  <h2>3. 세 번째 조건 — 예외 (직선이 못 맞히는 종)</h2>
+  <ul>
+    <li>포유류에서 R²가 0.50이라도, 절반은 직선이 <b>설명하지 못한다</b>는 뜻이기도 합니다.</li>
+    <li><b>잔차</b> = 실제 수명과 직선이 예측한 수명의 차이. 잔차가 큰 종이 곧 <b>직선을 크게 벗어난 예외</b>입니다.</li>
+    <li>직선보다 훨씬 오래 사는 쪽을 꼽아 보면, 하나같이 <b>몸집에 비해 유난히 장수하는</b> 종입니다.</li>
+  </ul>
+  <table class="daymap">
+    <thead><tr><th>종</th><th>몸무게</th><th>실제 최대수명</th></tr></thead>
+    <tbody>
+      <tr><td>브란트박쥐(Brandt's bat)</td><td>약 7g</td><td><b>41년</b></td></tr>
+      <tr><td>사람(Human)</td><td>약 62kg</td><td><b>122.5년</b></td></tr>
+      <tr><td>올름(Olm, 동굴 도롱뇽)</td><td>약 17g</td><td><b>102년</b></td></tr>
+      <tr><td>거친눈볼락(Rougheye rockfish)</td><td>약 495g</td><td><b>205년</b></td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip">
+    <div class="h">💡 예외가 알려 주는 것</div>
+    <ul>
+      <li>7g 박쥐가 41년, 같은 크기 쥐보다 몇 배를 삽니다. 겨울잠·비행 같은 <b>생활 방식</b>이 몸-수명 규칙을 비켜 갑니다.</li>
+      <li>사람도 62kg 포유류 평균(약 31년)보다 훨씬 오래 삽니다. 직선 밖에 우리가 있습니다.</li>
+      <li>모델이 못 맞히는 점은 오류가 아니라 <b>다음 질문의 출발점</b>입니다. "왜 이 종만 다를까"가 생물학의 물음이 됩니다.</li>
+    </ul>
+  </div>
+
+  <h2>4. 조건 바꿔 확인하기 (①③ 맛보기)</h2>
+  <ul>
+    <li>오늘은 코드보다 <b>판단</b>이 중심입니다. 척도를 바꾸고 집단을 좁히며 R²가 어떻게 달라지는지 눈으로 봅니다.</li>
+  </ul>
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>지난번 동물 수명 예측기에 점검 기능을 붙여 줘.
+- 화면에 R²(결정계수) 값을 카드로 크게 보여 주고, 이 값이 뭔지 한 줄로 설명해 줘.
+- 원래 눈금으로 학습할 때와 로그로 바꿔 학습할 때 R²가 어떻게 달라지는지
+  바로 비교하게 해 줘.
+- 전체 동물로 볼 때와 포유류만 골라 볼 때의 R²도 나란히 보여 줘.</pre></div>
+  <div class="codewrap improve"><span class="label">③ 프롬프트 개선 예시</span><pre>좋아, 이어서 고쳐 줘.
+- 학습한 직선에서 가장 크게 벗어난 종(직선보다 훨씬 오래 사는 종) 5개를
+  표로 뽑아 이름과 몸무게, 실제 수명을 보여 줘.
+- 예측 몸무게가 데이터 범위를 벗어나면 '조심: 관측 밖 예측' 문구가 뜨게 해 줘.</pre></div>
+  <div class="callout tip">
+    <div class="h">💡 그래서 답이 뭐냐고?</div>
+    <ul>
+      <li>몸집이 클수록 오래 사는 경향은 있습니다. 단, <b>어떤 척도로, 어느 집단에서</b> 보느냐에 따라 또렷함이 달라집니다.</li>
+      <li>정직한 답 = 숫자 하나가 아니라 <b>"어떤 조건에서 이 숫자, 그리고 이런 예외"</b>라고 밝히는 것.</li>
+    </ul>
+  </div>
+
+  <h2>🎒 오늘의 체크 &amp; 링크</h2>
+  <ul class="checklist">
+    <li>R²는 직선이 데이터를 얼마나 잘 설명하는지 나타내는 0~1 점수다</li>
+    <li>원척도 R² 0.08이 로그 척도에선 0.32로 올라간다 — 맞는 척도로 봐야 관계가 드러난다</li>
+    <li>포유류만 보면 R²가 0.50까지 올라간다 — 집단을 좁히면 관계가 또렷해진다</li>
+    <li>박쥐·사람·올름·볼락처럼 직선을 크게 벗어난 예외가 있고, 예외는 다음 질문의 출발점이다</li>
+    <li>척도와 집단을 밝히지 않은 R²는 반쪽 답이다</li>
+  </ul>
+
+  <h2>📚 오늘의 용어</h2>
+  <details class="glossary">
+    <summary>오늘 나온 낱말 5개 — 외울 필요 없습니다 · 잊으면 여기로</summary>
+    <div class="gin">
+    <table class="glossary-table">
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td class="term">R²(결정계수)</td><td>직선이 데이터를 얼마나 잘 설명하는지 나타내는 0~1 점수</td></tr>
+      <tr><td class="term">척도(스케일)</td><td>값을 재는 눈금 — 원래 눈금이냐 로그냐에 따라 관계가 다르게 보임</td></tr>
+      <tr><td class="term">집단(범주)</td><td>강·목처럼 데이터를 나누는 묶음 — 좁히면 관계가 또렷해지기도</td></tr>
+      <tr><td class="term">잔차</td><td>실제 값과 직선이 예측한 값의 차이 — 크면 직선을 벗어난 예외</td></tr>
+      <tr><td class="term">외삽</td><td>데이터가 거의 없는 범위까지 직선을 늘여 예측하는 것 — 조심</td></tr>
+    </table>
+    <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+    </div>
+  </details>
+
+  <div class="pager">
+    <a class="prev" href="lesson05.html"><div class="dir">← 이전</div><div class="tt">5차시 · 모델링(로그 공간에 직선을 긋다)</div></a>
+    <a class="next" href="lesson07.html"><div class="dir">다음 →</div><div class="tt">7차시 · 배포(내 예측기를 인터넷에)</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

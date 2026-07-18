@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>11차시 · 배포 + 백테스트 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">11차시 · 분류 트랙 ③</span>
+  <h1>배포 + <span class="a">백테스트</span></h1>
+  <div class="under"></div>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 만드는 것</div>
+    <ul>
+      <li><b>온혈·냉혈 판별 앱(배포 URL)</b> — 동물의 몸 정보를 넣으면 온혈·냉혈과 "얼마나 믿을지"를 보여 주는 앱</li>
+    </ul>
+  </div>
+
+  <h2>1. 정직한 시험 — 안 본 종으로 재기 (백테스트)</h2>
+  <p>모델을 학습에 쓴 종으로 다시 시험하면 점수가 부풉니다. 배운 답을 그대로 외웠을 수 있기 때문입니다. 진짜 실력은 <b>학습에 안 쓴 종</b>으로 재야 합니다. 이걸 <b>백테스트</b>라 합니다.</p>
+  <div class="callout tip">
+    <div class="h">💡 외운 점수 vs 진짜 점수</div>
+    <ul>
+      <li>학습에 쓴 종만 다시 물으면 정확도가 <b>거의 100%</b>로 나옵니다 · 답을 외운 것이라 부풀린 점수입니다</li>
+      <li>학습에서 뺀 종(<b>안 본 종</b>)으로 재면 <b>약 87%</b> · 이 쪽이 진짜에 가깝습니다</li>
+      <li>9차시의 <b>교차검증(약 83.5%)</b>도 매번 안 본 조각으로 시험한 정직한 점수였습니다</li>
+    </ul>
+  </div>
+
+  <h2>2. 백테스트 + 배포 앱 (①②③)</h2>
+  <div class="codewrap code"><span class="label">requirements.txt</span><pre>scikit-learn</pre></div>
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>스트림릿 '온혈·냉혈 판별 앱' 하나(main.py)를 만들어줘.
+스트림릿 클라우드에 올릴 거야. 조건:
+
+- 데이터는 이 주소에서 불러와(동물 4,513종의 몸 정보):
+  https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv
+- 체중과 수명이 빈 종은 빼고, 포유류·새면 온혈, 나머지는 냉혈으로
+  정답을 만들어줘. 빈칸은 중앙값으로 채워.
+- 종의 4분의 1을 '안 본 종'으로 떼어 두고 나머지로만 학습시켜줘.
+- 학습에 쓴 종의 정확도와, 떼어 둔 안 본 종의 정확도를 나란히 보여줘.
+  두 숫자가 왜 다른지 한 줄로 설명도 붙여줘.
+- 필요한 라이브러리 목록(requirements.txt)도 같이 줘.
+  버전 숫자 없이 이름만, 스트림릿·판다스·넘파이는 기본 설치라 빼고.
+- 한국어 라벨, 초보자용 한국어 주석. main.py 전체 코드를 한 번에 줘.</pre></div>
+  <ul>
+    <li>AI가 아래 <b>모습</b>의 코드를 줌 (똑같지 않아도 OK)</li>
+  </ul>
+  <div class="codewrap code"><span class="label">② AI가 준 코드 (예시)</span><pre>import streamlit as st
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+
+st.title("🧬 온혈·냉혈 판별 — 안 본 종으로 검증")
+
+url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv"
+df = pd.read_csv(url).dropna(subset=["adult_weight_g", "max_longevity_yrs"])
+df["is_warm"] = df["class"].isin(["Mammalia", "Aves"]).astype(int)
+
+feats = ["adult_weight_g", "max_longevity_yrs",
+         "female_maturity_days", "gestation_days", "litter_size"]
+X = df[feats].fillna(df[feats].median())
+y = df["is_warm"]
+
+# 종의 4분의 1을 '안 본 종'으로 떼어 두기
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.25, random_state=42)
+
+model = RandomForestClassifier(random_state=42)
+model.fit(X_train, y_train)
+
+# 학습에 쓴 종(외운 것)과 안 본 종의 정확도
+train_acc = accuracy_score(y_train, model.predict(X_train))
+test_acc = accuracy_score(y_test, model.predict(X_test))
+st.metric("학습에 쓴 종 정확도(외운 점수)", f"{train_acc:.1%}")
+st.metric("안 본 종 정확도(진짜 점수)", f"{test_acc:.1%}")</pre></div>
+  <div class="callout warn">
+    <div class="h">⚠️ 두 정확도는 다르다</div>
+    <ul>
+      <li>학습에 쓴 종은 거의 100%, 안 본 종은 그보다 낮습니다 · 이 차이가 <b>외운 점수와 진짜 점수의 거리</b>입니다</li>
+      <li>남에게 보여 줄 점수는 <b>안 본 종으로 잰 것</b>이어야 정직합니다</li>
+    </ul>
+  </div>
+  <div class="codewrap improve"><span class="label">③ 프롬프트 개선 (예시)</span><pre>좋아! 배포용으로 정리해줘.
+- 체중·수명·성숙일수·임신일수·한 배 새끼 수를 넣으면 온혈인지 냉혈인지
+  알려주는 화면으로 바꿔줘.
+- 예측 옆에 "이 예측은 안 본 종 기준 정확도 약 87%짜리예요" 같은
+  '얼마나 믿을지' 문구를 함께 보여줘.
+- 냉혈은 자주 놓칠 수 있으니 참고하라는 안내도 넣어줘.</pre></div>
+
+  <h2>3. 스트림릿에 배포하기</h2>
+  <ul>
+    <li>7차시 수명 예측기와 같은 방식 · 두 번째라 금방 됩니다</li>
+  </ul>
+  <ol class="steps">
+    <li><span class="st">파일 두 개 준비</span><br><code>main.py</code>와 <code>requirements.txt</code>를 내 GitHub 저장소에 올리기</li>
+    <li><span class="st">배포</span><br><a href="https://share.streamlit.io" target="_blank" rel="noopener"><code>share.streamlit.io</code></a> 접속 → <b>Create app</b> → 저장소·브랜치·<code>main.py</code> 선택 → <b>Deploy</b></li>
+    <li><span class="st">주소 공유</span><br>배포가 끝나면 생긴 주소(URL)를 복사 → <b>갤러리에 게시</b> · 짝의 앱을 눌러 좋아요와 한 줄 피드백("정말 그런가?" 질문 포함)</li>
+  </ol>
+  <div class="callout mini">
+    <div class="h">🖥️ 화면이 다르게 보이면</div>
+    <ul><li>스트림릿·GitHub 화면 구성은 조금씩 바뀔 수 있어요 — 버튼을 못 찾으면 <b>AI에게 물어보기</b>("스트림릿 클라우드에 배포하는 지금 방법 알려줘")</li></ul>
+  </div>
+
+  <h2>🔎 오늘의 발견</h2>
+  <div class="callout check">
+    <div class="h">✔️ 정직한 평가는 안 본 데이터로 한다</div>
+    <ul>
+      <li>학습에 쓴 종으로 잰 점수는 부풉니다 · 떼어 둔 안 본 종으로 재야 진짜 실력에 가깝습니다</li>
+      <li>배포한 앱엔 정확도만이 아니라 <b>"얼마나 믿을지"</b>를 함께 적어 줍니다 — 특히 냉혈은 자주 놓친다는 것까지</li>
+    </ul>
+  </div>
+
+  <h2>📚 오늘의 용어</h2>
+  <details class="glossary">
+    <summary>오늘 나온 낱말 — 외울 필요 없어요 · 잊으면 여기로</summary>
+    <div class="gin">
+    <table class="glossary-table">
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td class="term">백테스트</td><td>학습에 안 쓴 데이터로 성능을 재는 정직한 시험</td></tr>
+      <tr><td class="term">훈련·검증 분리</td><td>배울 데이터와 시험 볼 데이터를 나누는 일</td></tr>
+      <tr><td class="term">과적합</td><td>학습 데이터는 잘 맞히나 안 본 데이터에선 약해지는 상태(외운 것)</td></tr>
+      <tr><td class="term">배포</td><td>내가 만든 앱을 인터넷 주소로 남이 쓸 수 있게 올리는 일</td></tr>
+    </table>
+    <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+    </div>
+  </details>
+
+  <h2>🎒 오늘의 체크</h2>
+  <ul class="checklist">
+    <li>백테스트가 왜 안 본 종으로 재는지 설명할 수 있다</li>
+    <li>학습에 쓴 종 점수와 안 본 종 점수가 다르다는 걸 안다</li>
+    <li>온혈·냉혈 판별 앱을 배포하고 주소를 갤러리에 올렸다</li>
+    <li>앱에 "얼마나 믿을지" 문구를 넣었다</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="lesson10.html"><div class="dir">← 이전</div><div class="tt">10차시 · 정확도만 보면 놓치는 것</div></a>
+    <a class="next" href="lesson12.html"><div class="dir">다음 →</div><div class="tt">12차시 · 정답표 없이 비슷한 것끼리 묶기</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

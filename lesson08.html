@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8차시 · 정리(상관은 관계, 법칙은 물리) · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">8차시</span>
+  <h1>정리 — <span class="a">상관은 관계, 법칙은 따로</span></h1>
+  <div class="under"></div>
+  <div class="quote">
+    <div class="q">"직선을 그을 수 있다고 원인을 아는 건 아니다. 그래도 데이터에서 법칙이 드러날 때가 있다."</div>
+    <span class="by">회귀 8차시가 남긴 두 마음</span>
+  </div>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 하는 것</div>
+    <ul>
+      <li><b>상관·인과 메모 + 내 질문 확정</b> — 회귀 여정을 한 장으로 정리하고, 더 파 보고 싶은 질문을 정한다</li>
+    </ul>
+  </div>
+
+  <h2>0. 회귀 8차시 한눈에</h2>
+  <table class="daymap">
+    <thead><tr><th>차시</th><th>한 일</th><th>남긴 것</th></tr></thead>
+    <tbody>
+      <tr><td>1~2</td><td>질문 세우기 · 표 읽기</td><td>좋은 질문이 분석을 정한다</td></tr>
+      <tr><td>3~4</td><td>시각화 · 전처리</td><td>없는 값에도 이유가 있다(측정 비용·로그로 펴기)</td></tr>
+      <tr><td>5~6</td><td>모델링 · 평가와 한계</td><td>언제 믿을 수 있나 — 세 조건(척도·집단·예외)</td></tr>
+      <tr><td>7</td><td>배포</td><td>내 예측기가 주소를 얻었다</td></tr>
+    </tbody>
+  </table>
+
+  <h2>1. 상관 ≠ 인과</h2>
+  <ul>
+    <li>몸집이 큰 동물이 대체로 더 오래 삽니다. 둘은 함께 움직입니다(상관).</li>
+    <li>그렇다고 <b>몸집을 키우면 수명이 는다</b>고 말하면 안 됩니다. 코끼리로 몸을 불려도 사람이 코끼리만큼 살진 않습니다.</li>
+    <li>몸집과 수명은 <b>대사 속도·심박·번식 전략</b> 같은 숨은 요인들과 함께 얽혀 움직이는 셈입니다.</li>
+  </ul>
+  <div class="callout warn">
+    <div class="h">⚠️ 회귀는 관계를 볼 뿐, 원인을 증명하지 않는다</div>
+    <ul>
+      <li>회귀 직선은 "함께 움직인다"까지만 말합니다.</li>
+      <li>"몸집이 수명의 원인"이라는 결론은 회귀만으로 <b>못 내립니다</b>.</li>
+      <li>왜 그런지는 회귀가 아니라 <b>생물학 실험과 이론</b>으로 따로 밝혀야 합니다.</li>
+    </ul>
+  </div>
+  <div class="callout tip">
+    <div class="h">💡 상관인데 인과로 착각한 문장 찾기</div>
+    <ul>
+      <li>"바다에 사는 물고기가 오래 산다 → 동물을 물에 넣으면 오래 산다"</li>
+      <li>어디가 틀렸나요? 깊은 바다의 <b>낮은 수온·느린 대사</b>라는 공통 요인이 빠졌습니다. 이런 문장을 스스로 만들어 봅시다.</li>
+    </ul>
+  </div>
+
+  <h2>2. 그래도 법칙이 드러날 때 — 클라이버 법칙 재발견</h2>
+  <ul>
+    <li>상관이 인과는 아니지만, 데이터에서 <b>깨끗한 규칙</b>이 드러날 때가 있습니다.</li>
+    <li>동물의 <b>대사율</b>(에너지를 쓰는 속도)과 <b>체중</b>을 로그로 놓고 직선을 그어 봅시다.</li>
+    <li>생물학엔 <b>클라이버 법칙</b>이 있습니다 — 대사율은 체중의 <b>0.75제곱</b>에 비례한다는 오래된 법칙. 우리 데이터로 그 기울기가 나올까요?</li>
+  </ul>
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>동물의 대사율과 체중의 관계를 확인하는 코드를 만들어 줘.
+- 같은 life_animals.csv에서 체중(body_mass_g)과 대사율(metabolic_rate_w)이
+  둘 다 있는 종만 남겨 줘.
+- 둘 다 로그(log10)로 바꾸고, 로그 체중으로 로그 대사율을 예측하는 직선을 학습해 줘.
+- 그 직선의 기울기와 R²를 숫자로 보여 줘.</pre></div>
+  <div class="codewrap code"><span class="label">② AI가 준 코드 예시</span><pre>import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv"
+df = pd.read_csv(url)
+
+# 체중과 대사율이 둘 다 있는 종만 (대사율은 측정 비용이 커서 대부분 비어 있음)
+k = df.dropna(subset=["body_mass_g", "metabolic_rate_w"]).copy()
+k["log_mass"] = np.log10(k["body_mass_g"])      # 로그 체중
+k["log_met"]  = np.log10(k["metabolic_rate_w"])  # 로그 대사율
+
+model = LinearRegression()
+model.fit(k[["log_mass"]], k["log_met"])
+
+slope = model.coef_[0]
+r2 = model.score(k[["log_mass"]], k["log_met"])
+print(f"종 수: {len(k)}")           # 627
+print(f"기울기: {slope:.3f}")        # 0.713
+print(f"R^2: {r2:.2f}")             # 0.82</pre></div>
+  <div class="callout tip">
+    <div class="h">💡 생물에도 법칙이 있다</div>
+    <ul>
+      <li>우리 데이터로 나온 기울기는 <b>0.713</b>, 이론값 <b>0.75</b>에 놀랄 만큼 가깝습니다. R²는 <b>0.82</b>로 아주 잘 맞습니다.</li>
+      <li>박테리아부터 코끼리까지, 몸이 클수록 <b>단위 몸무게당 에너지는 덜</b> 씁니다. 이 규칙이 생물 전체를 관통합니다.</li>
+      <li>수업에서 우리가 손으로 그은 직선이 <b>100년 된 생물학 법칙을 재발견</b>했습니다. 데이터 과학이 과학과 만나는 지점입니다.</li>
+    </ul>
+  </div>
+  <div class="codewrap improve"><span class="label">③ 프롬프트 개선 예시</span><pre>좋아, 이어서 고쳐 줘.
+- 로그 체중과 로그 대사율의 점, 그리고 학습한 직선을 plotly로 함께 그려 줘.
+- 이론값 0.75 직선도 점선으로 겹쳐 그려서, 우리 기울기 0.713과 얼마나 가까운지 눈으로 보이게 해 줘.</pre></div>
+
+  <h2>3. 내 질문 확정하기</h2>
+  <ul>
+    <li>1차시에 던진 "몸집이 큰 동물은 정말 더 오래 사는가"가 8차시를 끌고 왔습니다.</li>
+    <li>이제 <b>내가 더 파 보고 싶은 질문</b>을 하나 정합니다 — 팀 프로젝트의 재료가 됩니다.</li>
+  </ul>
+  <div class="callout check">
+    <div class="h">✔️ 좋은 질문의 조건 (1차시 복습)</div>
+    <ul>
+      <li><b>측정 가능</b> — 숫자나 범주로 답이 나오는가</li>
+      <li><b>데이터로 답 가능</b> — 구할 수 있는 데이터가 있는가</li>
+      <li><b>범위 명확</b> — 어느 집단·어느 척도인지 분명한가</li>
+    </ul>
+  </div>
+  <div class="callout tip">
+    <div class="h">📝 오늘의 정리 메모</div>
+    <ul>
+      <li>상관·인과를 헷갈린 문장 <b>1개</b>를 만들고, 어디가 틀렸는지 한 줄로.</li>
+      <li>더 파 보고 싶은 <b>내 질문 1개</b>를 세 조건에 맞춰 적기.</li>
+    </ul>
+  </div>
+
+  <h2>🎒 오늘의 체크 &amp; 링크</h2>
+  <ul class="checklist">
+    <li>상관(함께 움직임)과 인과(원인)는 다르다</li>
+    <li>회귀는 관계를 볼 뿐 원인을 증명하지 않는다</li>
+    <li>대사율과 체중을 로그로 그으면 기울기 0.713(이론 0.75)·R² 0.82 — 클라이버 법칙 재발견</li>
+    <li>상관을 인과로 착각한 문장을 만들고 틀린 곳을 확인했다</li>
+    <li>세 조건에 맞는 내 질문 1개를 확정했다</li>
+  </ul>
+
+  <h2>📚 오늘의 용어</h2>
+  <details class="glossary">
+    <summary>오늘 나온 낱말 4개 — 외울 필요 없습니다 · 잊으면 여기로</summary>
+    <div class="gin">
+    <table class="glossary-table">
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td class="term">상관</td><td>두 값이 함께 오르내리는 관계 — 원인 여부는 알 수 없음</td></tr>
+      <tr><td class="term">인과</td><td>하나가 다른 하나의 원인이 되는 관계 — 따로 밝혀야 함</td></tr>
+      <tr><td class="term">대사율</td><td>몸이 에너지를 쓰는 속도(와트) — 측정 비용이 커서 자료가 드묾</td></tr>
+      <tr><td class="term">클라이버 법칙</td><td>대사율이 체중의 0.75제곱에 비례한다는 생물학 법칙</td></tr>
+    </table>
+    <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+    </div>
+  </details>
+
+  <div class="pager">
+    <a class="prev" href="lesson07.html"><div class="dir">← 이전</div><div class="tt">7차시 · 배포(내 예측기를 인터넷에)</div></a>
+    <a class="next" href="lesson09.html"><div class="dir">다음 →</div><div class="tt">9차시 · 온혈/냉혈(첫 분류 모델)</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

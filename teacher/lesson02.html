@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2차시 (교사용) · 데이터 만나기 · 표를 보는 눈 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👩‍🏫</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">👩‍🏫</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="../lesson02.html">학생용 2차시 ↗</a>
+  <span class="badge teacher">교사용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">2차시 · 교사용</span>
+  <h1>데이터 만나기 · 표를 보는 눈 — <span class="a">교사 진행안</span></h1>
+  <div class="under"></div>
+  <p class="lead">학생용 <a href="../lesson02.html">2차시 페이지 ↗</a>를 화면에 띄운 채 진행합니다.
+  여기에는 <b>시간표 · 멘트 · 예상 질문 · 예상 오류 · 이론 심화</b>를 덧댔습니다.</p>
+
+  <div class="callout say">
+    <div class="h">🎙️ 도입 멘트 — 4,513종을 통째로 보지 않는다</div>
+    <p>“지난 시간에 세운 질문의 데이터를 오늘 <b>처음 열어 봅니다.</b> 4,513종짜리 표인데, 통째로 읽을 순 없어요. <b>앞부분 몇 줄</b>과 <b>요약통계</b> 두 가지로 첫 인상만 잡습니다.” 여기서 <b>정형(행·열 표) vs 비정형(이미지·텍스트)</b> 한 컷도 확인해 둡니다 — 오늘부터 다루는 건 정형, 비정형은 15차시에 만난다는 예고.</p>
+  </div>
+
+  <h2>⏱️ 50분 진행 시간표</h2>
+  <table class="timetable">
+    <tr><th>시간</th><th>블록</th><th>핵심</th></tr>
+    <tr><td>0~8′</td><td>복습·도입</td><td>지난 시간 내 질문 확인 · life_animals.csv 소개 · 정형 vs 비정형 한 컷</td></tr>
+    <tr><td>8~28′</td><td>표의 첫 인상</td><td>앞부분 몇 줄 · 요약통계(개수·평균·최소·최대) · 강(class)별 종 수</td></tr>
+    <tr><td>28~45′</td><td>①②③ 실습</td><td>요약표 주문 → AI 결과 읽기 → "결측 개수도 함께"로 개선</td></tr>
+    <tr><td>45~50′</td><td>정리 (이월 가능)</td><td>열마다 값 개수가 다르다는 낌새 메모</td></tr>
+  </table>
+  <p class="lead" style="font-size:.92rem">블록 합 = 8 + 20 + 17 + 5 = <b>50분</b>(휴식 없음 기준).</p>
+  <div class="callout say">
+    <div class="h">🎙️ 시간이 밀리면</div>
+    <p>①②③ 실습(28~45′)이 처음이라 늘어질 수 있습니다. 오늘 반드시 남길 산출물은 <b>요약표 읽기 메모</b> 하나 — 특히 "열마다 값의 개수가 다르다"는 낌새 한 줄입니다. 정리 블록(45~50′)은 3차시 앞으로 이월해도 됩니다.</p>
+  </div>
+
+  <h2>블록별 진행 노트</h2>
+
+  <h3>복습·도입 (0~8′)</h3>
+  <div class="callout say">
+    <div class="h">🎙️ 멘트 — 오늘 쓸 데이터 소개</div>
+    <p>“파일 이름은 <b>life_animals.csv</b>. 한 줄에 동물 한 종이고, 그 종의 <b>몸무게·최대수명·대사율·성숙일·체온</b> 같은 몸의 수치가 열로 들어 있어요. 다운로드 없이 주소로 바로 불러옵니다.” 열 이름을 화면으로 함께 확인합니다.</p>
+  </div>
+
+  <h3>표의 첫 인상 (8~28′)</h3>
+  <div class="callout theory">
+    <div class="h">📖 이론 심화 — 요약이 감추는 것</div>
+    <p>요약통계의 <b>평균</b>은 이상치 앞에서 가장 약한 중심입니다. 한 관측이 크게 벗어나면 평균은 그쪽으로 끌려갑니다. 이 데이터가 딱 그렇습니다 — 몸무게 평균은 약 17만 6천 g인데, 이는 대왕고래(1억 3,600만 g) 한 마리가 평균을 끌어올린 결과입니다. 중앙값은 약 <b>451g</b>에 불과해요. 그래서 평균 하나만 보지 않고 <b>최소·최대·개수</b>를 함께 읽어 폭과 빈칸을 확인합니다. 학생에게는 “평균이 제일 정확한 게 아니다”와 “몸무게가 여덟 자릿수를 오르내린다”는 감각만 남기면 충분합니다. 이 폭이 3차시(원척도에선 안 보임)와 4차시(로그 변환)의 복선입니다.</p>
+  </div>
+  <div class="callout ask">
+    <div class="h">🙋 예상 질문</div>
+    <p><b>“count가 왜 열마다 달라요?”</b> → “값이 있는 칸만 세거든요. 몸무게는 3,641종, 최대수명은 4,025종, <b>대사율은 627종</b>만 값이 있어요. 나머지는 <b>결측</b>이죠. 대사율은 재기가 어려워서 유난히 많이 비어 있어요(4차시에서 다룸).” · <b>“평균 몸무게가 17만 g이면 다 큰 동물이에요?”</b> → “아뇨, 고래 한 마리가 평균을 끌어올린 거예요. 실제로는 <b>절반이 451g 이하</b>, 60%가 1kg 미만이에요. 그래서 평균만 믿으면 안 됩니다.”</p>
+  </div>
+
+  <h3>①②③ 실습 (28~45′)</h3>
+  <div class="callout say">
+    <div class="h">🎙️ 멘트 — 결과가 똑같지 않아도 된다</div>
+    <p>“여러분 화면이 <b>이런 모습</b>이면 성공이에요. 글자까지 같을 필요 없어요.” ②(AI가 준 코드)는 <b>선생님 화면으로 함께</b> 보고, ③ 개선(“빠진 값 개수도 함께 보여 줘”)까지 한 번 시연해 세 박자를 몸에 익히게 합니다.</p>
+  </div>
+  <div class="callout err">
+    <div class="h">🧯 예상 오류 (실측 기반)</div>
+    <p><b>저장소 접속 실패/URL 오타</b> → life_animals.csv 주소를 <b>학생용에서 복사</b>해 쓰게 함(직접 타이핑 금지). 방화벽에 raw.githubusercontent.com이 막혔으면 선생님 예비 사본으로 대체. · <b>영어 열 이름 가정</b> → 실제 열은 <code>common_name</code>·<code>adult_weight_g</code>·<code>max_longevity_yrs</code>·<code>class</code> 등. AI가 다른 이름을 가정하면 실제 열 이름을 프롬프트에 다시 안내. · <b>describe에 문자열 열이 빠짐</b> → 이름·강·목은 숫자가 아니라 요약에서 빠질 수 있음 — 정상. · <b>결측을 0으로 오해</b> → 빈 칸은 0이 아니라 “값 없음”. 평균 계산에서 <b>빠질 뿐</b> 0으로 안 들어감을 강조.</p>
+  </div>
+  <div class="callout ask">
+    <div class="h">🙋 예상 질문</div>
+    <p><b>“앞부분 다섯 줄만 보면 나머지는 안 봐도 돼요?”</b> → “전체를 눈으로 다 읽는 게 목표가 아니에요. <b>표가 어떻게 생겼나(앞부분)</b>와 <b>첫 인상(요약)</b> 두 가지만 잡으면 됩니다. 4,513줄을 스크롤하는 건 사람이 할 일이 아니에요.”</p>
+  </div>
+
+  <h3>정리 (45~50′ · 이월 가능)</h3>
+  <div class="callout say">
+    <div class="h">🎙️ 마무리 + 다음 차시 예고</div>
+    <p>“열마다 값의 개수가 다르다는 걸 발견했죠? ‘어떤 칸은 왜 비어 있지?’ — 이 물음을 메모해 두세요. 다음 시간엔 몸무게와 수명 두 숫자를 <b>점으로 흩뿌려서</b>, 무거운 동물이 정말 오래 사는지 눈으로 봅니다.”</p>
+  </div>
+
+  <div class="callout tip">
+    <div class="h">🧾 생기부 관찰 지점</div>
+    <p><b>데이터 감식</b> — 요약통계에서 “열마다 값 개수가 다르다”는 결측의 낌새를 스스로 알아채고, 대사율이 유독 적다는 점을 근거와 함께 메모로 남긴 학생을 채집.</p>
+  </div>
+
+  <h2>✅ 2차시 마무리 체크 (교사)</h2>
+  <ul class="checklist">
+    <li>전원 life_animals.csv를 주소로 불러와 요약표를 띄웠나? (접속 실패자 → 예비 사본)</li>
+    <li>요약통계에서 개수·평균·최소·최대를 읽을 수 있나?</li>
+    <li>4,513종·여섯 강, 열마다 값 개수가 다른 낌새를 메모로 남겼나?</li>
+    <li>정형/비정형 구분 한 컷을 확인했나? (15차시 확장 데모 복선)</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="lesson01.html"><div class="dir">← 이전</div><div class="tt">1차시 · 질문 세우기 (교사용)</div></a>
+    <a class="next" href="lesson03.html"><div class="dir">다음 →</div><div class="tt">3차시 · 시각화 (교사용)</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 교사용 자료</footer>
+<script src="../assets/copy.js"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>13차시 · k의 선택과 이상치 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">13차시 · 군집 트랙 (★핵심)</span>
+  <h1>점수는 <span class="a">정답을 주지 않는다</span></h1>
+  <div class="under"></div>
+  <div class="quote">
+    <div class="q">“모든 모델은 틀렸다. 다만 몇몇은 쓸모가 있다.”</div>
+    <span class="by">조지 박스 · “All models are wrong, but some are useful.” (1976)</span>
+  </div>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 하는 것</div>
+    <ul>
+      <li><b>k 비교표</b> — 2·3·4묶음을 나란히 두고 실루엣 점수·묶음 크기·이상치를 견주어, 어느 묶음을 언제 믿을지 판단으로 적는 기록</li>
+    </ul>
+  </div>
+
+  <h2>0. 지난 시간에 남긴 두 질문</h2>
+  <ul>
+    <li>포유류를 몸 프로파일(체중·수명·성숙 시기·임신 기간)로 <b>3묶음</b>으로 나눴고, 실루엣은 <b>0.35 안팎</b>이었다.</li>
+    <li>남은 질문 둘: ① <b>왜 하필 3묶음일까?</b> ② <b>왜 로그와 표준화를 거쳤을까?</b></li>
+    <li>오늘은 이 두 질문을 직접 확인한다. 세 가지 짚을 점이 모두 <b>"사람의 판단이 필요하다"</b>로 모인다.</li>
+  </ul>
+
+  <h2>1. 짚을 점 하나 — k에는 정답이 없다</h2>
+  <ul>
+    <li>묶음 수 <b>k</b>를 바꾸면 점수도 결과도 달라진다. 2·3·4묶음의 실루엣 점수를 나란히 견주어 보자.</li>
+  </ul>
+
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>지난번 포유류 군집을 이어서 살펴봐 줘.
+- 같은 데이터를 2묶음, 3묶음, 4묶음으로 각각 나눠서
+  실루엣 점수와 묶음별 동물 수를 나란히 비교해 줘.
+- 점수가 가장 높은 묶음 수가 몇인지도 알려 줘.</pre></div>
+
+  <div class="codewrap code"><span class="label">② AI가 준 코드 예시</span><pre>import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+from sklearn.metrics import silhouette_score
+
+URL = "https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv"
+df = pd.read_csv(URL)
+
+# 포유류만, 몸 프로파일 네 가지로 (12차시와 같은 준비)
+m = df[df["class"] == "Mammalia"]
+feats = ["adult_weight_g", "max_longevity_yrs", "female_maturity_days", "gestation_days"]
+a = m.dropna(subset=feats)
+
+X = np.log10(a[feats])            # 로그로 크기 차이를 눌러 주고
+Xs = StandardScaler().fit_transform(X)   # 표준화로 단위를 맞춘다
+
+for k in [2, 3, 4]:
+    labels = KMeans(n_clusters=k, random_state=42, n_init=10).fit_predict(Xs)
+    score = silhouette_score(Xs, labels)
+    sizes = pd.Series(labels).value_counts().sort_index().tolist()
+    print(f"k={k} · 실루엣 {score:.3f} · 묶음 크기 {sizes}")</pre></div>
+
+  <div class="callout check">
+    <div class="h">✔️ 실행하면 이렇게 나온다</div>
+    <ul>
+      <li>k=2 · 실루엣 <b>0.44</b> · 묶음 크기 [452, 332]</li>
+      <li>k=3 · 실루엣 <b>0.35</b> · 묶음 크기 [274, 307, 203]</li>
+      <li>k=4 · 실루엣 <b>0.29</b> · 묶음 크기 [112, 231, 262, 179]</li>
+      <li><b>점수는 2묶음이 가장 높다.</b> 그런데 우리는 3묶음을 골랐다 (이유는 바로 아래).</li>
+    </ul>
+  </div>
+  <div class="callout warn">
+    <div class="h">⚠️ 점수가 높은 답 ≠ 사람이 이해하는 답</div>
+    <ul>
+      <li>실루엣만 보면 "2묶음이 정답"이다. 하지만 2묶음은 세상을 <b>큰 동물·작은 동물</b> 딱 둘로만 뭉뚱그린다.</li>
+      <li>3묶음으로 늘리면 <b>대형 장수형·중형·소형 단명형</b>으로 갈라져 성격이 또렷해진다 (다음 시간에 이름을 붙인다).</li>
+      <li>k에 절대 정답은 없다. <b>점수와 해석을 함께 보고 사람이 고른다.</b></li>
+    </ul>
+  </div>
+
+  <h2>2. 짚을 점 둘 — 이상치 하나가 저울을 기울인다</h2>
+  <ul>
+    <li>이 데이터에서 가장 무거운 동물은 <b>흰긴수염고래(Blue whale)</b>다. 체중이 무려 <b>136톤</b>, 즉 <b>136,000,000g</b>이다.</li>
+    <li>가장 가벼운 포유류는 몇 <b>g</b>밖에 안 된다. 체중이 <b>여덟 자릿수</b>나 차이 난다.</li>
+    <li>이렇게 혼자 멀리 떨어진 값을 <b>이상치</b>라 한다. 아무 손질 없이 묶으면, 이 거인 하나가 묶기 전체를 끌고 간다.</li>
+  </ul>
+  <div class="callout tip">
+    <div class="h">💡 이상치를 어떻게 볼까</div>
+    <ul>
+      <li>흰긴수염고래는 잘못 적힌 값이 아니라 <b>진짜로 그만큼 큰</b> 동물이다. 지워야 할 오류가 아니다.</li>
+      <li>문제는 값 자체가 아니라 <b>재는 방식</b>이다. 원래 체중 그대로 재면 고래 하나가 저울을 다 차지한다.</li>
+      <li>그래서 필요한 것이 다음 짚을 점, <b>정규화</b>다.</li>
+    </ul>
+  </div>
+
+  <h2>3. 짚을 점 셋 — 무엇으로 재느냐가 결과를 바꾼다 (★)</h2>
+  <ul>
+    <li>12차시에서 우리는 체중을 <b>로그로 바꾸고 표준화</b>했다. 그 손질을 빼면 어떻게 될까? 직접 비교해 보자.</li>
+  </ul>
+
+  <div class="codewrap prompt"><span class="label">③ 프롬프트 개선 예시</span><pre>이번엔 로그와 표준화를 빼고 비교해 줘.
+- 체중·수명 같은 원래 숫자 그대로 3묶음으로 나눠 봐.
+- 각 묶음에 동물이 몇 마리 들어갔는지, 가장 작은 묶음엔
+  어떤 동물이 있는지 이름을 보여 줘.
+- 손질했을 때와 안 했을 때 묶음이 어떻게 달라지는지 나란히 봐.</pre></div>
+
+  <div class="codewrap code"><span class="label">② AI가 준 코드 예시</span><pre># 로그·표준화 없이 — 원래 숫자 그대로 3묶음으로
+labels_raw = KMeans(n_clusters=3, random_state=42, n_init=10).fit_predict(a[feats])
+groups = pd.Series(labels_raw, index=a["common_name"].values)
+
+sizes = groups.value_counts().sort_index()
+print("묶음 크기:", sizes.tolist())
+
+small = sizes.idxmin()          # 가장 작은 묶음
+print("가장 작은 묶음의 동물:", list(groups[groups == small].index))</pre></div>
+
+  <div class="callout check">
+    <div class="h">✔️ 실행하면 이렇게 나온다</div>
+    <ul>
+      <li>손질 없이 묶으니 묶음 크기가 <b>[775, 2, 7]</b>로 나온다. 한 묶음에 <b>775마리</b>가 몰린다.</li>
+      <li>가장 작은 묶음엔 <b>흰긴수염고래·북극고래</b>뿐이다. 거대한 고래들끼리만 따로 떨어져 나왔다.</li>
+      <li>체중 숫자가 워낙 커서, 컴퓨터 눈엔 <b>고래냐 아니냐</b>만 보인다. 나머지 미세한 차이는 다 묻혔다.</li>
+    </ul>
+  </div>
+  <div class="callout warn">
+    <div class="h">⚠️ 무엇을 기준으로 재느냐가 결과를 정한다</div>
+    <ul>
+      <li>같은 데이터, 같은 k인데 <b>재는 방법</b>만 바꿔도 묶음이 완전히 달라진다.</li>
+      <li>로그와 표준화는 <b>덩치의 격차를 눌러</b> 모든 특징을 공평하게 견주게 해 준다. 그래서 12차시에 그 손질을 먼저 했다.</li>
+      <li>"덩치로 묶을까, 삶의 방식으로 묶을까"는 <b>사람이 던지는 질문</b>이다. 컴퓨터는 시킨 대로 잴 뿐이다.</li>
+    </ul>
+  </div>
+
+  <h2>4. 오늘의 정리 — 세 번의 확인</h2>
+  <table class="daymap">
+    <thead><tr><th>짚을 점</th><th>무엇을 확인했나</th><th>사람이 할 판단</th></tr></thead>
+    <tbody>
+      <tr><td><b>k의 자의성</b></td><td>점수는 2묶음, 해석은 3묶음</td><td>점수와 뜻을 함께 보고 고르기</td></tr>
+      <tr><td><b>이상치</b></td><td>흰긴수염고래 136톤이 저울을 기울임</td><td>왜 튀는지 알고 다룰 방법 정하기</td></tr>
+      <tr><td><b>정규화</b></td><td>로그·표준화를 빼면 덩치로만 묶임</td><td>무엇으로 잴지 질문 세우기</td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip">
+    <div class="h">🧬 점수가 정답을 주지 않아도 괜찮다</div>
+    <ul>
+      <li>"정답이 없다"는 건 아무렇게나 해도 된다는 뜻이 아니다.</li>
+      <li>점수가 정답을 대신 주지 않기에 <b>사람의 판단이 필요하다</b>. 다음 시간, 그 판단으로 묶음에 <b>이름</b>을 붙인다.</li>
+    </ul>
+  </div>
+
+  <div class="callout mini">
+    <div class="h">📝 수행 과제 — k 비교표</div>
+    <ul>
+      <li>2·3·4묶음의 <b>실루엣 점수와 묶음 크기</b>를 표로 적는다.</li>
+      <li><b>어느 k를 고를지</b>와 그 이유(점수 근거 + 해석 근거)를 두세 줄로 쓴다.</li>
+      <li>흰긴수염고래가 왜 이상치인지, 정규화가 왜 필요한지 각각 한 줄씩 적는다.</li>
+    </ul>
+  </div>
+
+  <h2>📚 오늘의 용어</h2>
+  <details class="glossary">
+    <summary>오늘 나온 낱말 5개 — 외울 필요 없습니다 · 잊으면 여기로</summary>
+    <div class="gin">
+    <table class="glossary-table">
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td class="term">k (묶음 수)</td><td>k-means에서 몇 묶음으로 나눌지 사람이 정하는 값. 절대 정답은 없음</td></tr>
+      <tr><td class="term">실루엣 점수</td><td>묶음이 얼마나 또렷이 나뉘었는지 재는 숫자(1에 가까울수록 또렷). 참고 지표일 뿐 정답은 아님</td></tr>
+      <tr><td class="term">이상치</td><td>다른 값과 너무 달라 혼자 멀리 떨어진 값. 여기선 흰긴수염고래(136톤)</td></tr>
+      <tr><td class="term">정규화(로그·표준화)</td><td>덩치의 격차를 눌러 모든 특징을 공평하게 견주도록 숫자를 다듬는 손질</td></tr>
+      <tr><td class="term">점수 vs 해석</td><td>점수가 높은 답과 사람이 이해하는 답이 다를 수 있음</td></tr>
+    </table>
+    <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+    </div>
+  </details>
+
+  <h2>🎒 오늘의 체크 &amp; 링크</h2>
+  <ul class="checklist">
+    <li>k를 바꾸면 점수와 결과가 달라진다는 걸 직접 봤다</li>
+    <li>"점수는 2묶음, 해석은 3묶음"이 무슨 뜻인지 말할 수 있다</li>
+    <li>흰긴수염고래가 왜 이상치가 되는지 설명할 수 있다</li>
+    <li>로그·표준화를 빼면 덩치로만 묶인다는 걸 확인했다</li>
+    <li>k 비교표를 작성했다</li>
+  </ul>
+
+  <p>이 데이터는 <a href="https://github.com/greatsong/modudata" target="_blank" rel="noopener">modudata 저장소</a>에 올라가 있습니다.</p>
+
+  <div class="pager">
+    <a class="prev" href="lesson12.html"><div class="dir">← 이전</div><div class="tt">12차시 · 정답표 없이 비슷한 것끼리</div></a>
+    <a class="next" href="lesson14.html"><div class="dir">다음 →</div><div class="tt">14차시 · 이름 붙이기와 배포</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

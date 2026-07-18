@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>3차시 (교사용) · 시각화 · 점이 뭉쳐 안 보일 때 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="../assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>👩‍🏫</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">👩‍🏫</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="../lesson03.html">학생용 3차시 ↗</a>
+  <span class="badge teacher">교사용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">3차시 · 교사용</span>
+  <h1>시각화 · 점이 뭉쳐 안 보일 때 — <span class="a">교사 진행안</span></h1>
+  <div class="under"></div>
+  <p class="lead">학생용 <a href="../lesson03.html">3차시 페이지 ↗</a>를 화면에 띄운 채 진행합니다.
+  여기에는 <b>시간표 · 멘트 · 예상 질문 · 예상 오류 · 이론 심화</b>를 덧댔습니다.</p>
+
+  <div class="callout say">
+    <div class="h">🎙️ 도입 멘트 — 숫자를 그림으로</div>
+    <p>“지난 시간엔 표의 첫 인상을 <b>숫자</b>로 잡았죠. 오늘은 앵커 질문을 <b>그림</b>으로 물어봅니다. 몸무게와 수명을 점으로 흩뿌려서, 무거운 동물이 정말 오래 사는지 눈으로 확인해요. 그런데 오늘의 진짜 배움은 그래프가 <b>잘 안 보인다</b>는 걸 발견하고, 그 까닭을 찾는 데 있습니다.”</p>
+  </div>
+
+  <h2>⏱️ 50분 진행 시간표</h2>
+  <table class="timetable">
+    <tr><th>시간</th><th>블록</th><th>핵심</th></tr>
+    <tr><td>0~7′</td><td>복습·도입</td><td>요약통계 복습 · "이제 그림으로 관계를 보자"</td></tr>
+    <tr><td>7~30′</td><td>①②③ 실습</td><td>몸무게-수명 산점도 → AI 그래프 읽기 → 강별 색 칠하기 개선</td></tr>
+    <tr><td>30~45′</td><td>그래프 관찰 (모둠)</td><td>점이 좌하단에 뭉침 · r=0.29 · "왜 관계가 안 보이나" 토의</td></tr>
+    <tr><td>45~50′</td><td>정리 (이월 가능)</td><td>관찰 메모 + 왜 안 보일지 추측 (4차시 재료)</td></tr>
+  </table>
+  <p class="lead" style="font-size:.92rem">블록 합 = 7 + 23 + 15 + 5 = <b>50분</b>(휴식 없음 기준).</p>
+  <div class="callout say">
+    <div class="h">🎙️ 관계를 못 읽으면</div>
+    <p>학생이 "그래프가 이상하다"까지만 가고 이유를 못 찾으면, <b>대왕고래 한 점</b>이 가로축을 얼마나 차지하는지 콕 집어 보여 주세요. 오늘 반드시 남길 산출물은 <b>관찰 메모 + 왜 안 보일지 추측</b> — 정답이 아니어도 됩니다. 그 추측이 4차시 로그 변환의 재료입니다.</p>
+  </div>
+
+  <h2>블록별 진행 노트</h2>
+
+  <h3>①②③ 실습 (7~30′)</h3>
+  <div class="callout theory">
+    <div class="h">📖 이론 심화 — 왜 원척도로는 안 보이나</div>
+    <p>몸무게는 0.5g부터 1억 3,600만 g까지 <b>약 8.4자릿수</b>를 오르내립니다. 원래(선형) 눈금에서는 축 전체를 최댓값이 지배해, 값의 <b>60%가 몰린 1kg 미만 구간</b>이 한 점으로 뭉개집니다. 그래서 상관계수가 <b>r = 0.29</b>(R² = 0.08)로 낮게 <b>보입니다</b> — 관계가 없어서가 아니라 눈금이 관계를 못 펴서입니다. 4차시에서 두 축을 로그로 바꾸면 같은 데이터의 상관이 뚜렷해집니다(로그-로그 r ≈ 0.57). 여기서 학생이 스스로 “눈금을 바꿔야겠다”는 필요를 느끼게 하는 것이 이 차시의 목표입니다. 정답(로그)을 먼저 주지 마세요.</p>
+  </div>
+  <div class="callout err">
+    <div class="h">🧯 예상 오류 (실측 기반)</div>
+    <p><b>그래프가 안 뜸</b> → 실습 환경에 <code>plotly</code>가 있는지 확인. 안 뜨면 선생님 예비 화면으로 대체. · <b>축이 자동 로그로 잡힘</b> → 일부 도구는 큰 값이면 알아서 로그축을 씁니다. 오늘은 <b>원래 눈금</b>으로 봐야 “안 보이는 상황”을 경험하니, 로그축이면 선형으로 바꾸라고 안내. · <b>결측 종 때문에 경고</b> → 몸무게나 수명이 빈 종은 점이 안 찍힐 뿐 정상. 4차시에서 정리한다고 예고. · <b>hover에 이름이 안 뜸</b> → 이름 열(common_name)을 hover에 넣어 달라고 프롬프트에 다시.</p>
+  </div>
+
+  <h3>그래프 관찰 (30~45′)</h3>
+  <div class="callout say">
+    <div class="h">🎙️ 멘트 — 발견을 학생이 하게</div>
+    <p>“무거우면 오래 산다면, 점이 왼쪽 아래에서 오른쪽 위로 늘어서야 해요. 그런데 실제로는요?” 답을 바로 주지 말고 모둠이 보게 합니다. 나오면 정리: <b>점의 대부분이 좌하단에 뭉쳐 있고, 상관계수는 0.29로 낮게 보인다.</b> “관계가 정말 약한 걸까, 아니면 눈금 탓일까?”라는 물음이 다음 차시로 이어진다고 예고.</p>
+  </div>
+  <div class="callout ask">
+    <div class="h">🙋 예상 질문</div>
+    <p><b>“그럼 몸무게랑 수명은 관계가 없는 거예요?”</b> → “좋은 질문이에요. 근데 <b>이 그림만으로 단정하면 위험</b>해요. 점이 다 뭉쳐서 안 보이는 것일 수도 있거든요. 다음 시간에 눈금을 바꿔서 다시 확인할 거예요.” · <b>“고래 하나만 빼면 안 돼요?”</b> → “고래는 틀린 값이 아니라 진짜 동물이에요. 하나 빼는 것보다 <b>모두를 공평하게 보는 눈금</b>으로 바꾸는 게 정직합니다(4차시 로그).”</p>
+  </div>
+
+  <h3>정리 (45~50′ · 이월 가능)</h3>
+  <div class="callout say">
+    <div class="h">🎙️ 마무리 + 다음 차시 예고</div>
+    <p>“오늘 관찰한 걸 적어 두세요 — 점이 어디 뭉쳤나, 왜 관계가 안 보였을까. 다음 시간에 이 문제를 <b>눈금 바꾸기</b>로 풉니다. 힌트: ‘몇 배 차이를 같은 간격으로 편다’.”</p>
+  </div>
+
+  <div class="callout tip">
+    <div class="h">🧾 생기부 관찰 지점</div>
+    <p><b>데이터 감식 · 한계 인식</b> — 낮은 상관계수를 곧바로 “관계 없음”으로 단정하지 않고, 점이 뭉친 눈금 문제일 수 있다고 유보하며 근거를 적은 학생을 채집.</p>
+  </div>
+
+  <h2>✅ 3차시 마무리 체크 (교사)</h2>
+  <ul class="checklist">
+    <li>전원 몸무게-수명 산점도를 띄웠나? (안 뜨면 → 예비 화면)</li>
+    <li>점이 좌하단에 뭉치고 r=0.29로 낮게 보이는 걸 확인했나?</li>
+    <li>관찰 메모 + "왜 안 보일지" 추측을 기록했나? (4차시 재료)</li>
+    <li>"낮은 상관을 곧바로 관계 없음으로 단정하지 않기"를 확인해 4차시로 다리를 놓았나?</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="lesson02.html"><div class="dir">← 이전</div><div class="tt">2차시 · 데이터 만나기 (교사용)</div></a>
+    <a class="next" href="lesson04.html"><div class="dir">다음 →</div><div class="tt">4차시 · 전처리 (교사용)</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 교사용 자료</footer>
+<script src="../assets/copy.js"></script>
+</body>
+</html>

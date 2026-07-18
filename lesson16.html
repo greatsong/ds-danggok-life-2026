@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>16차시(선택) · 연관 분석 원리 체험 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">선택 · 16차시</span>
+  <h1>연관 분석 · <span class="a">우연보다 나은가</span></h1>
+  <div class="under"></div>
+
+  <div class="callout warn">
+    <div class="h">⏳ 선택 차시 — 시간이 되면 진행</div>
+    <p>이 차시는 수업 시간이 남을 때 한다. 데이터 파일도, 배포도 없다. 표 하나로 손계산만 해 본다.</p>
+  </div>
+
+  <p class="lead">"밤에 활동하는 동물은 대체로 고기를 먹는다"는 말을 한 번쯤 들어 봤을지 모른다. 두 특징이 함께 나타나는지 재는 것이 연관 분석이다. 오늘은 세 가지 숫자, <b>지지도·신뢰도·향상도</b>를 손으로 계산한다. 그리고 "함께 자주 나타남"과 "정말 관련 있음"이 다르다는 걸 확인한다.</p>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 하는 것</div>
+    <ul>
+      <li><b>손계산 워크시트</b> — 작은 표에서 지지도·신뢰도·향상도를 직접 구하기</li>
+      <li><b>겉보기 확인</b> — 신뢰도가 높아도 향상도가 1 이하일 수 있다는 것</li>
+    </ul>
+  </div>
+
+  <h2>1. 세 가지 숫자의 뜻</h2>
+  <p>어느 동물원의 관찰 기록 <b>100건</b>이 있다. 밤에 활동하는(<b>야행성</b>) 동물이 40건, 고기를 먹는(<b>육식</b>) 동물이 50건, 야행성이면서 육식인 동물이 <b>함께</b> 30건이다.</p>
+
+  <table class="glossary-table">
+    <tr><th>항목</th><th>건수</th></tr>
+    <tr><td class="term">전체 기록</td><td>100건</td></tr>
+    <tr><td class="term">야행성(A)</td><td>40건</td></tr>
+    <tr><td class="term">육식(B)</td><td>50건</td></tr>
+    <tr><td class="term">야행성이면서 육식(A·B)</td><td>30건</td></tr>
+  </table>
+
+  <p>"야행성 동물은 육식일까"라는 규칙(A → B)을 세 가지 숫자로 잰다.</p>
+
+  <ol class="steps">
+    <li><span class="st">지지도 — 얼마나 자주 함께 나오나</span><br>
+      A와 B가 함께 나온 비율. <code>함께 30 ÷ 전체 100 = 0.30</code><br>
+      전체의 30%가 야행성이면서 육식이었다.</li>
+    <li><span class="st">신뢰도 — A인 동물 중 B이기도 한 비율</span><br>
+      <code>함께 30 ÷ A 40 = 0.75</code><br>
+      야행성 동물 4마리 중 3마리는 육식이었다.</li>
+    <li><span class="st">향상도 — 우연보다 나은가</span><br>
+      신뢰도를, 육식의 기본 흔함(<code>B ÷ 전체 = 50 ÷ 100 = 0.50</code>)과 견준다.<br>
+      <code>향상도 = 신뢰도 ÷ B의 기본 흔함 = 0.75 ÷ 0.50 = 1.5</code><br>
+      야행성 동물은 육식일 확률이 <b>1.5배</b> 높다. 우연보다 낫다.</li>
+  </ol>
+
+  <div class="callout tip">
+    <div class="h">💡 향상도 읽는 법</div>
+    <ul>
+      <li><b>1보다 크다</b> → 함께 나타날 만한 관계 (A가 B를 끌어당김)</li>
+      <li><b>1이면</b> → 우연과 같음 (A가 있든 없든 B인 비율이 그대로)</li>
+      <li><b>1보다 작으면</b> → 오히려 덜 나타남 (우연보다 못함)</li>
+    </ul>
+  </div>
+
+  <h2>2. 겉보기와 다른 경우 — 신뢰도가 높아도 향상도가 1 이하</h2>
+  <p>이번엔 육식이 아주 흔한 관찰지라고 하자. 100건 중 <b>육식이 90건</b>이다. 야행성은 40건, 야행성이면서 육식인 경우는 34건이다.</p>
+
+  <table class="glossary-table">
+    <tr><th>항목</th><th>건수</th></tr>
+    <tr><td class="term">전체 기록</td><td>100건</td></tr>
+    <tr><td class="term">야행성(A)</td><td>40건</td></tr>
+    <tr><td class="term">육식(B · 흔한 특징)</td><td>90건</td></tr>
+    <tr><td class="term">야행성이면서 육식(A·B)</td><td>34건</td></tr>
+  </table>
+
+  <ol class="steps">
+    <li><span class="st">신뢰도는 높다</span><br>
+      <code>34 ÷ 40 = 0.85</code> → 야행성 동물의 85%가 육식이다. 언뜻 관계가 세 보인다.</li>
+    <li><span class="st">그런데 육식이 원래 흔하다</span><br>
+      <code>90 ÷ 100 = 0.90</code> → 야행성이든 아니든 열에 아홉이 육식이다.</li>
+    <li><span class="st">향상도로 확인한다</span><br>
+      <code>0.85 ÷ 0.90 = 0.94</code> → 1보다 작다. 야행성 동물은 오히려 육식일 확률이 <b>조금 낮았다</b>.</li>
+  </ol>
+
+  <div class="callout warn">
+    <div class="h">⚠️ 흔한 특징이면 겉보기와 다르다</div>
+    <p>신뢰도 85%는 커 보이지만, 원래 90%가 육식인 관찰지다. "야행성이라서 육식이다"라고 말할 수 없다. <b>향상도 1 이하 = 우연보다 못함</b>. 신뢰도만 보면 진짜 관계를 놓친다.</p>
+  </div>
+
+  <div class="callout check">
+    <div class="h">✔️ 스스로 풀어 보기</div>
+    <p>전체 200건, 초식(C) 80건, 낮에 활동(D) 60건, C·D 함께 48건일 때 지지도·신뢰도(C→D)·향상도를 구해 보자.<br>
+    (지지도 48÷200 = 0.24 · 신뢰도 48÷80 = 0.60 · D 기본 흔함 60÷200 = 0.30 · 향상도 0.60÷0.30 = <b>2.0</b> → 우연보다 2배)</p>
+  </div>
+
+  <h2>3. 팀 프로젝트와 연관 분석</h2>
+  <p>연관 분석은 "무엇과 무엇이 함께 나타나는가"를 묻는 팀에 어울린다. 다만 <b>함께 관찰된 기록</b>(장바구니처럼 한 건에 여러 특징이 같이 적힌 자료)이 필요하다. 우리 modudata에는 그런 형태의 데이터가 없어서, 이 틀을 택하는 팀은 데이터를 직접 찾아야 한다. 승인 절차에서 함께 살펴본다.</p>
+
+  <h2>🎒 오늘의 체크</h2>
+  <ul class="checklist">
+    <li>지지도·신뢰도·향상도가 각각 무슨 뜻인지 말할 수 있다.</li>
+    <li>100건·A 40·B 50·함께 30에서 0.30 · 0.75 · 1.5를 손으로 구했다.</li>
+    <li>신뢰도가 높아도 향상도가 1 이하일 수 있는 이유를 안다.</li>
+    <li>"향상도 1 이하 = 우연보다 못함"을 설명할 수 있다.</li>
+  </ul>
+
+  <h2>📚 오늘의 용어</h2>
+  <table class="glossary-table">
+    <tr><th>용어</th><th>뜻</th></tr>
+    <tr><td class="term">연관 분석</td><td>함께 자주 나타나는 항목을 찾는 분석 (장바구니 분석)</td></tr>
+    <tr><td class="term">지지도</td><td>전체 중 A·B가 함께 나온 비율. 얼마나 자주 함께 나오나</td></tr>
+    <tr><td class="term">신뢰도</td><td>A인 것 중 B이기도 한 비율</td></tr>
+    <tr><td class="term">향상도</td><td>신뢰도 ÷ B의 기본 흔함. 우연보다 나은지 재는 값</td></tr>
+  </table>
+  <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+
+  <div class="pager">
+    <a class="prev" href="lesson15.html"><div class="dir">← 이전</div><div class="tt">15차시 · 확장 데모 + 팀 구성</div></a>
+    <a class="next" href="index.html"><div class="dir">다음 →</div><div class="tt">목차로 돌아가기</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

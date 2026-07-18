@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>14차시 · 이름 붙이기와 배포 · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">14차시 · 군집 트랙 마무리</span>
+  <h1>이름은 <span class="a">사람이 붙인다</span></h1>
+  <div class="under"></div>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 만드는 것</div>
+    <ul>
+      <li><b>동물 무리 성격 찾기 앱</b> — 동물 이름을 검색하면 소속 묶음과 그 묶음의 프로파일(체중·수명), 내가 붙인 이름을 보여 주는 앱 (배포까지)</li>
+    </ul>
+  </div>
+
+  <h2>0. 컴퓨터는 묶기만 한다</h2>
+  <ul>
+    <li>지난 두 시간, 컴퓨터는 포유류를 몸 프로파일이 비슷한 묶음으로 나눴다.</li>
+    <li>그런데 컴퓨터가 준 건 <b>묶음 0, 묶음 1, 묶음 2</b>라는 번호뿐이다. 그 번호엔 <b>뜻이 없다</b>.</li>
+    <li>이 묶음이 "코끼리 같은 대형 장수형"인지 "생쥐 같은 소형 단명형"인지 읽어내는 건 <b>사람의 몫</b>이다. 오늘의 마지막 한 걸음.</li>
+  </ul>
+  <div class="callout warn">
+    <div class="h">⚠️ 묶음 번호는 실행마다 바뀐다</div>
+    <ul>
+      <li>k-means의 묶음 번호(0·1·2)는 돌릴 때마다 순서가 달라질 수 있다.</li>
+      <li>그러니 번호를 외우지 말고, <b>묶음의 프로파일(중앙값 체중·수명)</b>을 보고 이름을 붙인다.</li>
+    </ul>
+  </div>
+
+  <h2>1. 묶음의 프로파일 읽기</h2>
+  <ul>
+    <li>각 묶음의 <b>중앙값 체중과 수명</b>을 재면 성격이 보인다. 세 묶음의 중앙값은 이렇게 나온다.</li>
+  </ul>
+  <table class="daymap">
+    <thead><tr><th>중앙값 프로파일</th><th>어떤 무리일까</th><th>이름 후보</th></tr></thead>
+    <tbody>
+      <tr><td>체중 <b>약 70kg</b> · 수명 <b>약 30년</b></td><td>크고 오래 사는 동물 (코끼리·고래·사람)</td><td><b>대형 장수형</b></td></tr>
+      <tr><td>체중 <b>약 2.5kg</b> · 수명 <b>약 18년</b></td><td>중간 크기 동물 (개·여우 무리)</td><td><b>중형</b></td></tr>
+      <tr><td>체중 <b>약 66g</b> · 수명 <b>약 6년</b></td><td>작고 짧게 사는 동물 (생쥐·땃쥐 무리)</td><td><b>소형 단명형</b></td></tr>
+    </tbody>
+  </table>
+  <div class="callout tip">
+    <div class="h">💡 이름의 근거를 말로</div>
+    <ul>
+      <li>"이 묶음은 중앙값이 70kg·30년이니 <b>대형 장수형</b>"처럼, 프로파일 숫자를 근거로 붙인다.</li>
+      <li>이름은 정답이 아니라 <b>해석</b>이다. 근거만 또렷하면 다르게 불러도 된다.</li>
+    </ul>
+  </div>
+
+  <h2>2. 검색 앱 만들고 배포하기 (①②③)</h2>
+  <ul>
+    <li>만들 것 = 동물 이름을 넣으면 <b>소속 묶음 + 묶음 프로파일 + 내가 붙인 이름</b>이 뜨는 앱</li>
+    <li>requirements.txt에는 <code>scikit-learn</code>만 (기본 설치 제외 · 버전 없이).</li>
+  </ul>
+
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>포유류 군집 앱을 배포용으로 정리해 줘. 스트림릿 클라우드에 올릴 거야. 조건:
+
+- 포유류만 골라서 체중, 수명, 성숙 시기, 임신 기간 네 가지로,
+  앞서처럼 로그와 표준화를 거쳐 k-means 3묶음으로 나눠 줘.
+- 묶음마다 중앙값 체중을 재서, 큰 순서대로 대형 장수형, 중형,
+  소형 단명형이라고 자동으로 이름을 붙여 줘.
+- 위에 동물 이름을 입력하는 검색창을 둬. 동물을 넣으면 그 동물이
+  어느 무리인지 알려 주고, 그 무리의 중앙값 체중과 수명도 보여줘.
+- 한국어 라벨, 따뜻한 톤, 초보자용 한국어 주석. main.py 전체 코드를 한 번에 줘.
+- 필요한 라이브러리 목록(requirements.txt)도 버전 없이 같이 줘.</pre></div>
+
+  <div class="codewrap code"><span class="label">② AI가 준 코드 예시</span><pre>import streamlit as st
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import KMeans
+
+st.title("🧬 동물 무리 성격 찾기")
+
+@st.cache_data
+def load():
+    url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv"
+    return pd.read_csv(url)
+
+df = load()
+
+# 포유류만, 몸 프로파일 네 가지로 (로그와 표준화)
+m = df[df["class"] == "Mammalia"]
+feats = ["adult_weight_g", "max_longevity_yrs", "female_maturity_days", "gestation_days"]
+a = m.dropna(subset=feats).copy()
+Xs = StandardScaler().fit_transform(np.log10(a[feats]))
+a["묶음"] = KMeans(n_clusters=3, random_state=42, n_init=10).fit_predict(Xs)
+
+# 중앙값 체중이 큰 순서대로 이름을 붙인다 (번호는 실행마다 바뀌므로)
+순서 = a.groupby("묶음")["adult_weight_g"].median().sort_values(ascending=False).index
+이름 = {순서[0]: "대형 장수형", 순서[1]: "중형", 순서[2]: "소형 단명형"}
+a["무리"] = a["묶음"].map(이름)
+
+# 동물 검색
+q = st.text_input("동물 이름을 입력하세요(영문)", "Human")
+hit = a[a["common_name"] == q]
+if len(hit) > 0:
+    cl = int(hit["묶음"].iloc[0])
+    st.subheader(f"{q} → {이름[cl]}")
+    무리 = a[a["묶음"] == cl]
+    st.write("이 무리의 중앙값 — 체중",
+             f"{무리['adult_weight_g'].median():.0f} g · 수명",
+             f"{무리['max_longevity_yrs'].median():.1f} 년")
+else:
+    st.info("그 동물을 찾지 못했어요. 영문 이름을 다시 확인해 주세요.")</pre></div>
+
+  <div class="callout check">
+    <div class="h">✔️ 실행하면 이렇게 나온다</div>
+    <ul>
+      <li><code>Blue whale</code>·<code>Human</code>·<code>Chimpanzee</code>를 검색하면 <b>대형 장수형</b>에 들어간다.</li>
+      <li><code>Domestic dog</code>를 검색하면 <b>중형</b>, 작은 땃쥐 무리는 <b>소형 단명형</b>에 들어간다.</li>
+      <li>중앙값을 보고 <code>이름</code>이 <b>대형 장수형·중형·소형 단명형</b>으로 자동으로 붙으면 완성.</li>
+    </ul>
+  </div>
+
+  <div class="codewrap improve"><span class="label">③ 프롬프트 개선 예시</span><pre>좋아! 배포용으로 마무리해 줘.
+- 세 무리의 중앙값 체중과 수명을 한눈에 보는 작은 표를 위에 띄워 줘.
+- 검색한 동물이 세 무리 중 어디에 드는지 눈에 띄게 강조해 줘.
+- 맨 위에 "이 묶음은 컴퓨터가 나눴고, 이름은 사람이 붙였습니다"
+  라는 한 줄 안내를 넣어줘.</pre></div>
+
+  <h3>2-1. 배포하기 (클릭)</h3>
+  <ol class="steps">
+    <li><span class="st">깃허브에 올리기</span><br><code>main.py</code>와 <code>requirements.txt</code>를 내 깃허브 저장소에 올린다.</li>
+    <li><span class="st">스트림릿 연결</span><br><a href="https://share.streamlit.io" target="_blank" rel="noopener"><code>share.streamlit.io</code></a>에서 <b>New app</b> → 저장소·<code>main.py</code> 선택 → <b>Deploy</b>. 준비에 1~2분. (화면 구성은 조금씩 바뀔 수 있어요 — 못 찾으면 AI에게 물어보기)</li>
+    <li><span class="st">주소 확인·게시</span><br>생긴 앱 주소(URL)를 갤러리에 올리고, 짝의 앱을 눌러 좋아요와 한 줄 피드백을 남긴다.</li>
+  </ol>
+  <div class="callout tip">
+    <div class="h">💡 사람이 이상치가 될 때</div>
+    <ul>
+      <li><code>Human</code>은 체중 62kg, 수명 <b>122년</b>이라 <b>대형 장수형</b>에 든다. 몸집에 비하면 유난히 오래 사는 종이다.</li>
+      <li>6차시에서 본 "크기 대비 오래 사는 종"(박쥐·사람)이 여기서도 얼굴을 내민다. 데이터는 여러 트랙에서 같은 이야기를 들려준다.</li>
+    </ul>
+  </div>
+
+  <h2>3. 군집 트랙 마무리</h2>
+  <ul>
+    <li>비지도학습으로 동물을 묶고(12차시), 그 묶음을 언제 믿을지 확인하고(13차시), 오늘 <b>뜻을 붙였다</b>.</li>
+    <li>데이터 과학의 마지막 한 걸음은 계산이 아니라 <b>해석</b>이다.</li>
+  </ul>
+  <div class="callout check">
+    <div class="h">✔️ 세 트랙을 지나며 배운 것</div>
+    <ul>
+      <li>회귀: 직선을 그어도 <b>언제 믿을 수 있나</b>를 먼저 묻는다.</li>
+      <li>분류: 정확도가 높아도 <b>무엇을 놓쳤나</b>를 본다.</li>
+      <li>군집: 점수가 정답을 주지 않기에 <b>사람이 이름을 붙인다</b>.</li>
+    </ul>
+  </div>
+
+  <div class="callout mini">
+    <div class="h">📝 수행 과제 — 이름의 근거</div>
+    <ul>
+      <li>내가 붙인 묶음 이름 세 개와, 각 이름을 붙인 <b>근거(중앙값 체중·수명)</b>를 한 줄씩 적는다.</li>
+      <li>배포한 앱 주소를 갤러리에 올린다.</li>
+    </ul>
+  </div>
+
+  <h2>📚 오늘의 용어</h2>
+  <details class="glossary">
+    <summary>오늘 나온 낱말 4개 — 외울 필요 없습니다 · 잊으면 여기로</summary>
+    <div class="gin">
+    <table class="glossary-table">
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td class="term">군집 해석</td><td>컴퓨터가 나눈 묶음이 무슨 뜻인지 사람이 읽어내는 일</td></tr>
+      <tr><td class="term">중앙값 프로파일</td><td>묶음의 대표 성격을 보여 주는 중앙값(체중·수명 등)</td></tr>
+      <tr><td class="term">이름 붙이기</td><td>묶음의 프로파일을 근거로 성격 이름(대형 장수형 등)을 정하는 판단</td></tr>
+      <tr><td class="term">배포</td><td>내가 만든 앱을 인터넷 주소로 남과 공유하는 것</td></tr>
+    </table>
+    <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+    </div>
+  </details>
+
+  <h2>🎒 오늘의 체크 &amp; 링크</h2>
+  <ul class="checklist">
+    <li>묶음의 중앙값 프로파일을 보고 성격을 읽을 수 있다</li>
+    <li>묶음 세 개에 근거를 대며 이름을 붙였다</li>
+    <li>동물 검색 앱을 배포하고 주소를 갤러리에 올렸다</li>
+    <li>"이름은 사람이 붙인다"가 무슨 뜻인지 말할 수 있다</li>
+  </ul>
+
+  <div class="pager">
+    <a class="prev" href="lesson13.html"><div class="dir">← 이전</div><div class="tt">13차시 · k의 선택과 이상치</div></a>
+    <a class="next" href="lesson15.html"><div class="dir">다음 →</div><div class="tt">15차시 · 확장 데모와 팀 구성</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>

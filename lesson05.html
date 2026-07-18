@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>5차시 · 모델링(로그 공간에 직선을 긋다) · 생명의 데이터 · 데이터 과학 당곡고</title>
+<link rel="stylesheet" href="assets/style.css">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🧬</text></svg>">
+</head>
+<body>
+<div class="topbar"><div class="inner">
+  <a class="brand" href="index.html"><span class="chick">🧬</span> 데이터 과학 <span class="a">당곡고</span></a>
+  <span class="spacer"></span>
+  <a class="home" href="index.html">← 목차</a>
+  <span class="badge">학생용</span>
+</div></div>
+
+<div class="wrap">
+<main>
+  <span class="eyebrow">5차시</span>
+  <h1>모델링 — <span class="a">로그 공간에 직선을 긋다</span></h1>
+  <div class="under"></div>
+
+  <div class="make-banner">
+    <div class="t">🎯 오늘 만드는 것</div>
+    <ul>
+      <li><b>수명 예측기 초안</b> — 동물의 몸무게를 슬라이더로 고르면 예상 수명을 알려 주는 작은 AI</li>
+    </ul>
+  </div>
+
+  <h2>0. 지난 차시까지</h2>
+  <ul>
+    <li>4차시에서 몸무게와 수명이 모두 있는 <b>3,188종</b>만 남겼습니다.</li>
+    <li>몸무게가 8자릿수까지 벌어져서, 원래 눈금으로는 점이 좌하단에 뭉쳐 보이지 않았습니다.</li>
+    <li>그래서 몸무게와 수명을 각각 <b>로그(log)</b>로 바꿔 폈습니다. 로그 공간에서는 점 구름이 우상향하는 띠로 보입니다.</li>
+    <li>이제 이 띠 한가운데를 지나는 <b>직선</b>을 긋습니다.</li>
+  </ul>
+
+  <h2>1. 회귀 = 점들에 가장 잘 맞는 직선 긋기</h2>
+  <ul>
+    <li>가로축 log10(몸무게), 세로축 log10(수명)으로 점을 찍으면 오른쪽 위로 흐르는 구름이 보입니다.</li>
+    <li>그 구름 한가운데를 지나는 <b>한 줄기 직선</b>을 찾는 일이 <b>회귀</b>입니다.</li>
+    <li>직선의 <b>기울기</b>가 "몸무게가 커질 때 수명이 얼마나 늘어나는가"를 요약합니다.</li>
+  </ul>
+  <div class="callout tip">
+    <div class="h">💡 기울기를 읽는 법</div>
+    <ul>
+      <li>이 데이터로 로그-로그 직선을 그으면 기울기가 <b>약 0.136</b>이 나옵니다.</li>
+      <li>뜻: 몸무게가 <b>10배</b>로 늘어도 수명은 <b>10<sup>0.136</sup> ≈ 1.37배</b>밖에 늘지 않습니다.</li>
+      <li>몸집이 클수록 오래 사는 경향은 있지만, 그 <b>정도가 완만</b>하다는 것을 숫자 하나가 말해 줍니다.</li>
+    </ul>
+  </div>
+
+  <h2>2. "학습"이란 — model.fit 한 줄</h2>
+  <ul>
+    <li>가장 잘 맞는 직선을 <b>사람이 손으로</b> 찾지 않습니다. 컴퓨터가 데이터를 보고 스스로 찾습니다.</li>
+    <li>이 "스스로 규칙을 찾는 과정"이 <b>학습</b>이고, 코드로는 <code>model.fit()</code> 딱 한 줄입니다.</li>
+    <li>학습이 끝난 직선에 새 몸무게를 넣으면 예측이 나옵니다 → <code>model.predict()</code>.</li>
+  </ul>
+  <table class="daymap">
+    <thead><tr><th>단계</th><th>하는 일</th></tr></thead>
+    <tbody>
+      <tr><td><b>학습</b></td><td>로그 공간의 점들에 가장 잘 맞는 직선 찾기 (<code>model.fit</code>)</td></tr>
+      <tr><td><b>예측</b></td><td>학습한 직선에 몸무게를 넣어 수명 뽑기 (<code>model.predict</code>)</td></tr>
+    </tbody>
+  </table>
+
+  <h2>3. 예측기 만들기 (①②③)</h2>
+  <ul>
+    <li>도구 = scikit-learn의 선형회귀. requirements.txt엔 <code>scikit-learn</code>·<code>plotly</code>만(스트림릿·판다스·넘파이는 기본 설치, 버전 없이).</li>
+    <li>데이터 = <code>life_animals.csv</code> 주소 그대로 불러오기(다운로드 없음). 이 데이터는 <a href="https://github.com/greatsong/modudata" target="_blank" rel="noopener"><code>modudata</code></a>에 올라가 있습니다.</li>
+  </ul>
+  <div class="codewrap code"><span class="label">requirements.txt</span><pre>scikit-learn
+plotly</pre></div>
+  <div class="codewrap prompt"><span class="label">① 샘플 프롬프트</span><pre>동물의 몸무게로 수명을 예측하는 스트림릿 앱(main.py) 하나를 만들어 줘. 스트림릿 클라우드에 올릴 거야. 조건:
+
+- 데이터는 이 주소에서 불러와(동물 4천여 종의 몸과 수명 자료이고,
+  열은 이름, 강, 목, 몸무게(g), 최대수명(년) 등이야):
+  https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv
+- 몸무게와 최대수명이 둘 다 있는 종만 남겨 줘(빈 값은 빼).
+- 몸무게와 수명은 크기가 아주 넓게 퍼져 있으니, 둘 다 로그(log10)로 바꿔서 학습해 줘.
+- 로그 몸무게로 로그 수명을 예측하는 회귀 직선을 학습시켜 줘.
+- 슬라이더로 몸무게를 고르면 예상 수명을 원래 단위(년)로 크게 보여 줘.
+- 실제 점들과 학습한 직선을 plotly 그래프로 로그 축에 함께 그려 줘.
+- 필요한 라이브러리 목록(requirements.txt)도 같이 줘. 버전 숫자 없이 이름만,
+  스트림릿·판다스·넘파이는 기본 설치라 빼고.
+- 한국어 라벨, 따뜻한 톤, 초보자용 한국어 주석. main.py 전체 코드를 한 번에 줘.</pre></div>
+  <ul>
+    <li>AI가 아래 <b>모습</b>의 코드를 줍니다(똑같지 않아도 됩니다).</li>
+  </ul>
+  <div class="codewrap code"><span class="label">② AI가 준 코드 예시</span><pre>import streamlit as st
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+st.title("🧬 동물 수명 예측기")
+
+# 수집 — CSV 불러오기 (동물 4천여 종의 몸과 수명 자료)
+url = "https://raw.githubusercontent.com/greatsong/modudata/main/data/life_animals.csv"
+df = pd.read_csv(url)
+
+# 전처리 — 몸무게와 수명이 둘 다 있는 종만 남기고, 로그로 바꾸기
+a = df.dropna(subset=["adult_weight_g", "max_longevity_yrs"]).copy()
+a["logW"] = np.log10(a["adult_weight_g"])   # 로그 몸무게
+a["logL"] = np.log10(a["max_longevity_yrs"]) # 로그 수명
+
+X = a[["logW"]]   # 대괄호 두 개: 표 모양으로
+y = a["logL"]
+
+# 학습 — 이 한 줄이 '학습'! 가장 잘 맞는 직선을 찾는다
+model = LinearRegression()
+model.fit(X, y)
+
+# 예측 — 슬라이더로 몸무게(g)를 넣으면 예상 수명을 계산
+weight = st.slider("동물의 몸무게(g)", 1, 3000000, 1000)
+log_pred = model.predict([[np.log10(weight)]])[0]
+pred = 10 ** log_pred   # 로그를 되돌려 원래 단위(년)로
+st.subheader(f"몸무게 {weight}g → 예상 수명 약 {pred:.1f}년")
+
+# (지면상 생략 — 실제 코드엔 plotly로 그린 '실제 점 + 학습 직선' 그래프가 로그 축에 함께 옵니다)</pre></div>
+  <ul>
+    <li>핵심은 <code>model.fit(X, y)</code> 한 줄 — 여기서 작은 AI가 태어납니다.</li>
+    <li>슬라이더를 움직이면 예측값이 따라 바뀝니다. 여러 몸무게를 넣어 봅시다. 1kg(1000g)이면 약 17년, 70kg(70000g)이면 약 31년이 나옵니다.</li>
+  </ul>
+  <div class="codewrap improve"><span class="label">③ 프롬프트 개선 예시</span><pre>좋아, 이어서 고쳐 줘.
+- 몸무게가 10배로 늘 때 수명이 몇 배 되는지를 화면에 한 줄로 크게 보여 줘.
+- 예측값 옆에, 그 몸무게에 가까운 실제 동물 이름을 하나 찾아서 함께 보여 줘.
+- 실제 점은 회색, 학습한 직선은 초록색으로.</pre></div>
+
+  <div class="callout warn">
+    <div class="h">⚠️ 슬라이더를 코끼리 너머로 밀면?</div>
+    <ul>
+      <li>직선이라 몸무게를 밀수록 예상 수명이 <b>끝없이</b> 올라갑니다.</li>
+      <li>데이터에 거의 없는 아주 크거나 아주 작은 몸무게까지 직선을 늘이는 것을 <b>외삽</b>이라 합니다.</li>
+      <li>정말 그럴까요? 이 물음이 다음 차시(평가와 한계)의 중심입니다.</li>
+    </ul>
+  </div>
+
+  <h2>🎒 오늘의 체크 &amp; 링크</h2>
+  <ul class="checklist">
+    <li>회귀는 로그 공간의 점들에 가장 잘 맞는 직선을 긋는 일이다</li>
+    <li><code>model.fit()</code> 한 줄이 '학습'이다</li>
+    <li>로그-로그 기울기 0.136은 "몸무게 10배에 수명 1.37배"라는 완만한 관계를 요약한다</li>
+    <li>슬라이더로 몸무게를 넣어 예측값을 확인했다</li>
+    <li>데이터 밖으로 직선을 늘이는 '외삽'은 확인할 거리다 (다음 차시)</li>
+  </ul>
+
+  <h2>📚 오늘의 용어</h2>
+  <details class="glossary">
+    <summary>오늘 나온 낱말 6개 — 외울 필요 없습니다 · 잊으면 여기로</summary>
+    <div class="gin">
+    <table class="glossary-table">
+      <tr><th>용어</th><th>뜻</th></tr>
+      <tr><td class="term">회귀</td><td>점들 사이로 가장 잘 맞는 직선을 그어 숫자를 예측하는 방법</td></tr>
+      <tr><td class="term">선형회귀</td><td>직선 하나로 관계를 나타내는 가장 기본적인 회귀</td></tr>
+      <tr><td class="term">로그-로그 회귀</td><td>가로·세로축을 모두 로그로 바꾼 공간에서 직선을 긋는 회귀</td></tr>
+      <tr><td class="term">학습(model.fit)</td><td>데이터를 보고 가장 잘 맞는 직선을 컴퓨터가 스스로 찾는 과정</td></tr>
+      <tr><td class="term">기울기</td><td>직선이 얼마나 가파른지 — 여기선 '몸무게 10배에 수명 몇 배'</td></tr>
+      <tr><td class="term">외삽</td><td>데이터가 거의 없는 범위까지 직선을 늘여 예측하는 것 — 조심</td></tr>
+    </table>
+    <p class="glossary-more"><a href="glossary.html">📚 전체 용어사전 보기 →</a></p>
+    </div>
+  </details>
+
+  <div class="pager">
+    <a class="prev" href="lesson04.html"><div class="dir">← 이전</div><div class="tt">4차시 · 전처리(로그로 펴기)</div></a>
+    <a class="next" href="lesson06.html"><div class="dir">다음 →</div><div class="tt">6차시 · 평가와 한계</div></a>
+  </div>
+</main>
+</div>
+
+<footer class="foot">당곡고등학교 · 데이터 과학 · 생명의 데이터 · 학생용 교재</footer>
+<script src="assets/release.js"></script>
+<script src="assets/copy.js"></script>
+</body>
+</html>
